@@ -93,9 +93,15 @@ const Sidebar = () => {
           ))}
         </nav>
         {/* Bottom */}
-        <div className="px-6 py-4 space-y-3 text-sm text-gray-500">
-          <div className="flex items-center gap-2">X Twitter</div>
-          <div className="flex items-center gap-2">Telegram</div>
+        <div className="px-[32px] flex flex-col gap-2 mb-3 text-[14px] leading-[20px]">
+          <div className="flex items-center gap-3 text-sm text-black">
+            <Icon name="Twitter" variant={'fill'} />
+            <span>Twitter / X</span>
+          </div>
+          <div className="flex items-center gap-3 text-sm text-black">
+            <Icon name="Tele" variant={'fill'} />
+            <span>Telegram</span>
+          </div>
         </div>
       </div>
     </aside>

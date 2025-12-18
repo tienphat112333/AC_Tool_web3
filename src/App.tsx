@@ -1,17 +1,80 @@
-import { HeaderAuth } from './components/header'
+import { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import { Footer } from './components/footer'
-import { Sidebar } from './components/sidebar'
+import { HeaderGuest } from './components/header'
+import { ConnectPage } from './pages/connect'
+import { DashboardPage } from './pages/dashboard'
+import { isAuthenticated } from './utils/auth'
+import { AuthModal } from './components/auth'
+
+const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
+  return isAuthenticated() ? <>{children}</> : <Navigate to="/" replace />
+}
+
+const ConnectPageWithLayout = () => {
+  const [isModalOpen, setIsModalOpen] = useState(false)
+  const [modalMode, setModalMode] = useState<'register' | 'signin'>('signin')
+  const navigate = useNavigate()
+
+  const handleConnectClick = () => {
+    setIsModalOpen(true)
+    setModalMode('signin')
+  }
+
+  const handleModalClose = () => {
+    setIsModalOpen(false)
+  }
+
+  const handleModeSwitch = () => {
+    setModalMode((prev) => (prev === 'register' ? 'signin' : 'register'))
+  }
+
+  const handleAuthSuccess = () => {
+    navigate('/dashboard')
+  }
+
+  return (
+    <>
+      <HeaderGuest onConnectClick={handleConnectClick} />
+      <ConnectPage 
+        onConnectClick={handleConnectClick}
+        isModalOpen={isModalOpen}
+        modalMode={modalMode}
+        onModalClose={handleModalClose}
+        onModeSwitch={handleModeSwitch}
+        onAuthSuccess={handleAuthSuccess}
+      />
+      <Footer />
+      <AuthModal
+        mode={modalMode}
+        isOpen={isModalOpen}
+        onClose={handleModalClose}
+        onModeSwitch={handleModeSwitch}
+        onSuccess={handleAuthSuccess}
+      />
+    </>
+  )
+}
 
 const App = () => {
   return (
-    <>
-      <HeaderAuth />
-      <Sidebar />
-      <main>
-        <h1 className="font-bold text-center my-20">AC Tools</h1>
-      </main>
-      <Footer />
-    </>
+    <BrowserRouter>
+      <Routes>
+        <Route
+          path="/"
+          element={<ConnectPageWithLayout />}
+        />
+        <Route
+          path="/dashboard"
+          element={
+            <ProtectedRoute>
+              <DashboardPage />
+            </ProtectedRoute>
+          }
+        />
+      </Routes>
+    </BrowserRouter>
   )
 }
 
