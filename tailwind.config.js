@@ -13,6 +13,9 @@ export default {
         background: 'hsl(var(--background))',
         background2: 'hsl(var(--secondary-background))',
         foreground: 'hsl(var(--foreground))',
+        colorDivide: {
+          DEFAULT: 'hsl(var(--divide))',
+        },
         card: {
           DEFAULT: 'hsl(var(--card))',
           foreground: 'hsl(var(--card-foreground))',

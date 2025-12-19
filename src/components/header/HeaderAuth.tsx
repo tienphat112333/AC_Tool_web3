@@ -29,17 +29,17 @@ const HeaderAuth = ({ title = 'New Transaction' }: HeaderAuthProps) => {
   }
 
   return (
-    <header className="flex items-center justify-between w-full h-[60px] pr-[16px] pl-[24px] bg-white">
-      <h2 className="text-[24px] font-bold leading-[28px]">{title}</h2>
+    <header className="flex items-center justify-between w-full h-[60px] pr-4 pl-6 bg-white">
+      <h2 className="text-2xl font-bold leading-[28px]">{title}</h2>
       <div className="relative">
         <button
           type="button"
           onClick={handleToggle}
-          className="flex w-[223px] items-center justify-center gap-2 px-[24px] pt-[20px] pb-4"
+          className="flex w-[223px] items-center justify-center gap-2 px-6 pt-5 pb-4"
         >
           <img src={Avatar} alt="user avatar" />
-          <div className="flex w-[135px] items-center justify-between gap-6 h-[36px]">
-            <div className="h-[36px] w-[95px] text-[12px] leading-[18px] text-left">
+          <div className="flex w-[135px] items-center justify-between gap-6 h-9">
+            <div className="h-9 w-[95px] text-xs leading-[18px] text-left">
               <h3 className="font-medium">0x4aq...gfr6j5lda</h3>
               <p className="text-secondary-text">200 ZKN</p>
             </div>
@@ -48,11 +48,11 @@ const HeaderAuth = ({ title = 'New Transaction' }: HeaderAuthProps) => {
         </button>
 
         {open && (
-          <div className="absolute right-0 top-[66px] z-20 w-[199px] rounded-[8px] bg-white py-2 text-sm shadow-lg">
+          <div className="absolute right-0 top-[66px] z-20 w-[199px] rounded-lg bg-white py-2 text-sm shadow-lg">
             <button
               type="button"
               onClick={handleGoProfile}
-              className="flex w-full items-center gap-2 px-4 py-2 text-left hover:bg-[#F5FBFB] text-[16px] leading-[20px]"
+              className="flex w-full items-center gap-2 px-4 py-2 text-left hover:bg-[#F5FBFB] text-base leading-[20px]"
             >
               <Icon name="Profile" />
               <span>Profile</span>
@@ -60,7 +60,7 @@ const HeaderAuth = ({ title = 'New Transaction' }: HeaderAuthProps) => {
             <button
               type="button"
               onClick={handleLogout}
-              className="flex w-full items-center gap-2 px-4 py-2 text-left hover:bg-[#F5FBFB] text-[16px] leading-[20px]"
+              className="flex w-full items-center gap-2 px-4 py-2 text-left hover:bg-[#F5FBFB] text-base leading-[20px]"
             >
               <Icon name="Logout" variant={'fill'} />
               <span>Log out</span>

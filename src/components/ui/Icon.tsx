@@ -268,7 +268,7 @@ export type IconName = keyof typeof iconPaths
 const iconVariants = cva('inline-block shrink-0 transition-colors', {
   variants: {
     size: {
-      default: 'w-[16px] h-[16px]',
+      default: 'w-4 h-4',
     },
     variant: {
       stroke: 'stroke-current fill-none stroke-[1.5]',

@@ -65,7 +65,7 @@ const AuthModal = ({ mode, isOpen, onClose, onModeSwitch, onSuccess }: AuthModal
       onClick={handleClose}
     >
       <div
-        className="relative bg-white rounded-[16px] w-full max-w-[500px] p-6 shadow-lg"
+        className="relative bg-white rounded-2xl w-full max-w-[500px] p-6 shadow-lg"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Close Button */}
@@ -78,13 +78,13 @@ const AuthModal = ({ mode, isOpen, onClose, onModeSwitch, onSuccess }: AuthModal
         </button>
 
         {/* Title */}
-        <h2 className="text-[20px] font-bold leading-[28px] text-center mb-6">
+        <h2 className="text-xl font-bold leading-[28px] text-center mb-6">
           {mode === 'register' ? 'Register' : 'Sign In'}
         </h2>
 
         {/* Error Message */}
         {error && (
-          <div className="mb-4 p-3 bg-red-50 border border-red-200 text-red-700 rounded-lg text-sm">
+          <div className="mb-4 p-3 bg-red-50 borde border-red-200 text-red-700 rounded-lg text-sm">
             {error}
           </div>
         )}
@@ -95,7 +95,7 @@ const AuthModal = ({ mode, isOpen, onClose, onModeSwitch, onSuccess }: AuthModal
           <div>
             <label
               htmlFor="wallet-address"
-              className="block text-[16px] leading-[24px] font-medium mb-2"
+              className="block text-base leading-[24px] font-medium mb-2"
             >
               Wallet Address
             </label>
@@ -107,13 +107,13 @@ const AuthModal = ({ mode, isOpen, onClose, onModeSwitch, onSuccess }: AuthModal
               onChange={(e) => setWalletAddress(e.target.value)}
               required
               hasError={!!error}
-              className="w-[452px] h-[52px] rounded-[8px] px-[10px] py-[16px]"
+              className="w-[452px] h-[52px] rounded-lg px-[10px] py-4"
             />
           </div>
 
           {/* Password */}
           <div>
-            <label htmlFor="password" className="block text-[16px] leading-[24px] font-medium mb-2">
+            <label htmlFor="password" className="block text-base leading-[24px] font-medium mb-2">
               Password
             </label>
             <div className="relative">
@@ -125,7 +125,7 @@ const AuthModal = ({ mode, isOpen, onClose, onModeSwitch, onSuccess }: AuthModal
                 onChange={(e) => setPassword(e.target.value)}
                 required
                 hasError={!!error}
-                className="w-[452px] h-[52px] rounded-[8px] px-[10px] py-[16px]"
+                className="w-[452px] h-[52px] rounded-lg px-[10px] py-4"
               />
               <button
                 type="button"
@@ -153,7 +153,7 @@ const AuthModal = ({ mode, isOpen, onClose, onModeSwitch, onSuccess }: AuthModal
                   onChange={(e) => setConfirmPassword(e.target.value)}
                   required
                   hasError={!!error}
-                  className="w-[452px] h-[52px] rounded-[8px] px-[10px] py-[16px]"
+                  className="w-[452px] h-[52px] rounded-lg px-[10px] py-4"
                 />
                 <button
                   type="button"
@@ -170,7 +170,7 @@ const AuthModal = ({ mode, isOpen, onClose, onModeSwitch, onSuccess }: AuthModal
           {/* Submit Button */}
           <Button
             type="submit"
-            className="w-full bg-[#009E99] hover:bg-[#00706E] text-white h-12 rounded-lg"
+            className="w-full bg-primary hover:bg-primary-primary2 text-white h-12 rounded-lg"
             disabled={isLoading}
           >
             {isLoading ? 'Processing...' : mode === 'register' ? 'Register' : 'Sign'}
@@ -179,11 +179,7 @@ const AuthModal = ({ mode, isOpen, onClose, onModeSwitch, onSuccess }: AuthModal
 
         {/* Mode Switch Link */}
         <div className="mt-4 text-center">
-          <button
-            type="button"
-            onClick={onModeSwitch}
-            className="text-sm text-[#009E99] hover:underline"
-          >
+          <button type="button" onClick={onModeSwitch} className="text-sm text-black underline">
             {mode === 'register' ? 'You already have an Account?' : "You haven't Account?"}
           </button>
         </div>

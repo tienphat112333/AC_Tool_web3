@@ -16,18 +16,18 @@ const ConnectPage = ({ onConnectClick }: ConnectPageProps) => {
       <img
         src={Bg1}
         alt="background color with mountain and river"
-        className="py-2 rounded-[8px] w-full h-[613px] relative"
+        className="py-2 rounded-lg w-full h-[613px] relative"
       />
-      <div className="absolute w-[610px] h-[220px]  top-[200px] flex flex-col justify-center items-center gap-[32px]">
+      <div className="absolute w-[610px] h-[220px] top-[200px] flex flex-col justify-center items-center gap-8">
         <h1 className="font-medium text-[40px] leading-[48px]">Tokens & NFT with Ease</h1>
-        <div className="text-[24px] leading-[30px] w-[610px] flex flex-col justify-center items-center">
+        <div className="text-2xl leading-[30px] w-[610px] flex flex-col justify-center items-center">
           <p>Launch Token, Liquidity, Airdrops and much more.</p>
           <p>Effortless and without coding.</p>
         </div>
 
         <Button
           size={'sm'}
-          className="w-[216px] h-[56px] bg-white text-primary hover:text-white"
+          className="w-[216px] h-14 bg-white text-primary hover:text-white"
           onClick={onConnectClick}
         >
           Connect Your Wallet
