@@ -58,13 +58,12 @@ const Sidebar = () => {
                 className={cn(
                   'justify-start w-[176px] h-[40px] font-[400] text-[14px] leading-[16px] tracking-[0.1px]'
                 )}
-                // onClick={() => {setActiveKey(item.key) }}
                 onClick={() => {
                   if (item.children) {
                     setActiveKey(item.key)
-                    toggleExpand(item.key) // Nếu có con -> Chỉ đóng/mở
+                    toggleExpand(item.key)
                   } else {
-                    setActiveKey(item.key) // Nếu không có con -> Active luôn
+                    setActiveKey(item.key)
                   }
                 }}
               >

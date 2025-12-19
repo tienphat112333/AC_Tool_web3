@@ -5,6 +5,7 @@ import { Footer } from './components/footer'
 import { HeaderGuest } from './components/header'
 import { ConnectPage } from './pages/connect'
 import { DashboardPage } from './pages/dashboard'
+import { ProfilePage } from './pages/profile'
 import { isAuthenticated } from './utils/auth'
 import { AuthModal } from './components/auth'
 
@@ -37,7 +38,7 @@ const ConnectPageWithLayout = () => {
   return (
     <>
       <HeaderGuest onConnectClick={handleConnectClick} />
-      <ConnectPage 
+      <ConnectPage
         onConnectClick={handleConnectClick}
         isModalOpen={isModalOpen}
         modalMode={modalMode}
@@ -61,15 +62,28 @@ const App = () => {
   return (
     <BrowserRouter>
       <Routes>
-        <Route
-          path="/"
-          element={<ConnectPageWithLayout />}
-        />
+        <Route path="/" element={<ConnectPageWithLayout />} />
         <Route
           path="/dashboard"
           element={
             <ProtectedRoute>
               <DashboardPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/profile/tokens"
+          element={
+            <ProtectedRoute>
+              <ProfilePage defaultTab="tokens" />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/profile/nfts"
+          element={
+            <ProtectedRoute>
+              <ProfilePage defaultTab="nfts" />
             </ProtectedRoute>
           }
         />

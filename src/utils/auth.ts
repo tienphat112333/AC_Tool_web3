@@ -1,5 +1,3 @@
-// Mock authentication utilities
-
 export interface AuthResponse {
   success: boolean
   message?: string
