@@ -13,6 +13,7 @@ export default {
         background: 'hsl(var(--background))',
         background2: 'hsl(var(--secondary-background))',
         foreground: 'hsl(var(--foreground))',
+        secondaryRed: 'hsl(var(--secondary-red))',
         colorDivide: {
           DEFAULT: 'hsl(var(--divide))',
         },
@@ -33,6 +34,7 @@ export default {
           DEFAULT: 'hsl(var(--secondary))',
           foreground: 'hsl(var(--secondary-foreground))',
           text: 'hsl(var(--secondary-text))',
+          subText: 'hsl(var(--sub-text))',
         },
         muted: {
           DEFAULT: 'hsl(var(--muted))',

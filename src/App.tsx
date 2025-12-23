@@ -8,6 +8,7 @@ import { DashboardPage } from './pages/dashboard'
 import { ProfilePage } from './pages/profile'
 import { isAuthenticated } from './utils/auth'
 import { AuthModal } from './components/auth'
+import { TokenCreator } from './pages/token/create'
 
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   return isAuthenticated() ? <>{children}</> : <Navigate to="/" replace />
@@ -64,6 +65,14 @@ const App = () => {
       <Routes>
         <Route path="/" element={<ConnectPageWithLayout />} />
         <Route
+          path="/token/creator"
+          element={
+            <ProtectedRoute>
+              <TokenCreator />
+            </ProtectedRoute>
+          }
+        />
+        <Route
           path="/dashboard"
           element={
             <ProtectedRoute>
@@ -71,6 +80,7 @@ const App = () => {
             </ProtectedRoute>
           }
         />
+
         <Route
           path="/profile/tokens"
           element={

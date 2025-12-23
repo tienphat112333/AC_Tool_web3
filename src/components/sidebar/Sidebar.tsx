@@ -3,12 +3,14 @@ import { Button } from '../ui/button'
 import cn from '../../utils/cn'
 import { Icon } from '../ui/Icon'
 import { SIDEBAR_ITEMS } from '../../constants/sidebarItems'
+import { useNavigate } from 'react-router-dom'
 
 const Sidebar = () => {
   const [activeKey, setActiveKey] = useState<string>('dashboard')
   const [expandedKeys, setExpandedKeys] = useState<Record<string, boolean>>({
     token: false,
   })
+  const navigate = useNavigate()
   const toggleExpand = (key: string) => {
     setExpandedKeys((prev) => ({
       ...prev,
@@ -17,13 +19,13 @@ const Sidebar = () => {
   }
 
   return (
-    <aside className="w-[208px] h-[768px] bg-white flex flex-col ">
+    <aside className="w-[208px] max-h-full bg-white flex flex-col ">
       <div className="flex flex-col justify-center items-center h-[60px] border-b">
         <div className="px-6 py-5 text-xl font-bold text-primary">
           <h2>ACW3</h2>
         </div>
       </div>
-      <div className="flex flex-col justify-between items-center gap-4 h-[708px]">
+      <div className="flex flex-col justify-between items-center gap-4 h-full">
         {/* Menu */}
         <nav className="p-5 flex flex-col gap-2">
           {SIDEBAR_ITEMS.map((item) => (
@@ -41,6 +43,7 @@ const Sidebar = () => {
                     toggleExpand(item.key)
                   } else {
                     setActiveKey(item.key)
+                    navigate(item.navigate)
                   }
                 }}
               >
@@ -58,7 +61,10 @@ const Sidebar = () => {
                       className={cn(
                         'justify-start font-normal h-7 w-[122px] text-sm leading-[16px] tracking-[0.1px]'
                       )}
-                      onClick={() => setActiveKey(child.key)}
+                      onClick={() => {
+                        setActiveKey(child.key)
+                        if (child.navigate) navigate(child.navigate)
+                      }}
                     >
                       {child.label}
                     </Button>
