@@ -9,6 +9,7 @@ import { ProfilePage } from './pages/profile'
 import { isAuthenticated } from './utils/auth'
 import { AuthModal } from './components/auth'
 import { TokenCreator } from './pages/token/create'
+import { TokenList } from './pages/token/list'
 
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   return isAuthenticated() ? <>{children}</> : <Navigate to="/" replace />
@@ -69,6 +70,14 @@ const App = () => {
           element={
             <ProtectedRoute>
               <TokenCreator />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/token/list"
+          element={
+            <ProtectedRoute>
+              <TokenList />
             </ProtectedRoute>
           }
         />

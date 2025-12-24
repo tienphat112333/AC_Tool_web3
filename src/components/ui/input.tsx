@@ -26,24 +26,29 @@ interface InputProps
     Omit<React.InputHTMLAttributes<HTMLInputElement>, 'size'>,
     VariantProps<typeof inputVariants> {
   icon?: React.ReactNode
+  suffix?: React.ReactNode
 }
 
 const Input = React.forwardRef<HTMLInputElement, InputProps>(
-  ({ className, size, hasError, icon, placeholder, ...props }, ref) => {
+  ({ className, size, hasError, icon, suffix, placeholder, ...props }, ref) => {
     return (
       <div className="relative w-full">
         <input
           ref={ref}
-          className={cn(inputVariants({ size, hasError, className }))}
+          className={cn(inputVariants({ size, hasError, className }), suffix && 'pr-12')}
           placeholder=" "
           {...props}
         />
 
         <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center gap-2 px-3 text-gray-400 transition-all peer-focus:hidden peer-[:not(:placeholder-shown)]:hidden">
           {icon}
-
           <span className="text-sm text-gray-400">{placeholder}</span>
         </div>
+        {suffix && (
+          <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3 text-secondary-text">
+            <span className="font-normal">{suffix}</span>
+          </div>
+        )}
       </div>
     )
   }

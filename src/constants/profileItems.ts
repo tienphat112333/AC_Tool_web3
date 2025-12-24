@@ -15,6 +15,7 @@ export const MOCK_TOKENS = [
     percent: '100%',
     total: 200,
     avatar: avt1,
+    mintProgress: 100,
   },
   {
     id: 2,
@@ -25,6 +26,7 @@ export const MOCK_TOKENS = [
     percent: '100%',
     total: 200,
     avatar: avt2,
+    mintProgress: 0,
   },
   {
     id: 3,
@@ -35,6 +37,7 @@ export const MOCK_TOKENS = [
     percent: '100%',
     total: 200,
     avatar: avt3,
+    mintProgress: 0,
   },
   {
     id: 4,
@@ -45,6 +48,7 @@ export const MOCK_TOKENS = [
     percent: '100%',
     total: 200,
     avatar: avt4,
+    mintProgress: 100,
   },
 ]
 
