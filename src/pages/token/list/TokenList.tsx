@@ -3,7 +3,7 @@ import { HeaderAuth } from '../../../components/header'
 import { Sidebar } from '../../../components/sidebar'
 import { Button } from '../../../components/ui/button'
 import { Icon } from '../../../components/ui/Icon'
-import { MOCK_TOKENS } from '../../../constants/profileItems'
+import { MOCK_TOKENS } from '../../../constants/constant'
 import { MinModal } from '../../../components/mint/MintModal'
 
 const TokenList = () => {

@@ -6,7 +6,7 @@ import { Button } from '../../components/ui/button'
 import { EditProfileModal, type ProfileData } from '../../components/profile'
 import { Icon } from '../../components/ui/Icon'
 import Avata from '../../assets/images/Avatar.png'
-import { MOCK_TOKENS, MOCK_NFTS } from '../../constants/profileItems'
+import { MOCK_TOKENS, MOCK_NFTS } from '../../constants/constant'
 
 type ProfileTab = 'tokens' | 'nfts'
 
@@ -41,28 +41,28 @@ const ProfilePage = ({ defaultTab }: ProfilePageProps) => {
         <HeaderAuth title="Profile" />
 
         <main className="flex-1 bg-background2 p-3">
-          <div className="flex flex-row gap-4 items-start">
+          <div className="flex flex-row items-start gap-4">
             {/* Left profile card */}
-            <section className="w-[300px] rounded-lg bg-white p-4 shadow-sm min-h-[329.45px] flex-shrink-0 flex flex-col gap-4">
-              <div className=" flex items-center gap-3">
-                <img src={Avata} alt="avata user" className="w-10 h-10" />
+            <section className="flex min-h-[329.45px] w-[300px] flex-shrink-0 flex-col gap-4 rounded-lg bg-white p-4 shadow-sm">
+              <div className="flex items-center gap-3">
+                <img src={Avata} alt="avata user" className="h-10 w-10" />
                 <div className="text-sm">
-                  <p className="font-semibold text-[16px]">{profile.name}</p>
+                  <p className="text-[16px] font-semibold">{profile.name}</p>
                   <p className="text-xs text-secondary-text">0x4aq...gfr6j5lda</p>
                 </div>
               </div>
 
               <div className="flex flex-col gap-4 text-sm">
                 <div>
-                  <p className="text-lg leading-[24px] font-medium mb-2">Balance</p>
+                  <p className="mb-2 text-lg font-medium leading-[24px]">Balance</p>
                   <p className="text-sm text-secondary-text">200 ZKN</p>
                 </div>
                 <div>
-                  <p className="text-lg leading-[24px] font-medium mb-2">Biography</p>
+                  <p className="mb-2 text-lg font-medium leading-[24px]">Biography</p>
                   <p className="text-sm text-secondary-text">{profile.biography || 'None'}</p>
                 </div>
                 <div>
-                  <p className="text-lg leading-[24px] font-medium mb-2">Social Links</p>
+                  <p className="mb-2 text-lg font-medium leading-[24px]">Social Links</p>
                   <div className="mt-1 flex gap-2 text-xs text-secondary-text">
                     <Icon name="Twitter" variant={'fill'} />
                     <Icon name="github" variant={'fill'} />
@@ -71,7 +71,7 @@ const ProfilePage = ({ defaultTab }: ProfilePageProps) => {
                 </div>
               </div>
               <Button
-                className=" h-10 w-full rounded-[1000px]"
+                className="h-10 w-full rounded-[1000px]"
                 size="default"
                 onClick={() => setIsEditOpen(true)}
               >
@@ -82,11 +82,11 @@ const ProfilePage = ({ defaultTab }: ProfilePageProps) => {
             {/* Right content: tokens / NFTs */}
             <section className="flex flex-1 flex-col gap-2">
               <div className="flex gap-2">
-                <div className="flex-1 rounded-lg bg-white p-4 shadow-sm py-4 px-6">
+                <div className="flex-1 rounded-lg bg-white p-4 px-6 py-4 shadow-sm">
                   <p className="text-base leading-[20px] text-secondary-text">Total Tokens</p>
-                  <p className="mt-2 text-2xl leading-[24px] font-medium">0</p>
+                  <p className="mt-2 text-2xl font-medium leading-[24px]">0</p>
                 </div>
-                <div className="flex-1 rounded-lg bg-white p-4 shadow-sm py-4 px-6">
+                <div className="flex-1 rounded-lg bg-white p-4 px-6 py-4 shadow-sm">
                   <p className="text-base leading-[20px] text-secondary-text">Total NFTs</p>
                   <p className="mt-2 text-2xl font-semibold">0</p>
                 </div>
@@ -115,9 +115,9 @@ const ProfilePage = ({ defaultTab }: ProfilePageProps) => {
                 </div>
 
                 {activeTab === 'tokens' ? (
-                  <div className="overflow-hidden ">
+                  <div className="overflow-hidden">
                     <div className="divide-y divide-colorDivide">
-                      <div className="grid grid-cols-[1.5fr,1.5fr,1.2fr,1.1fr] py-3 text-base leading-[20px] font-medium text-secondary-text ">
+                      <div className="grid grid-cols-[1.5fr,1.5fr,1.2fr,1.1fr] py-3 text-base font-medium leading-[20px] text-secondary-text">
                         <span className="text-black">Token</span>
                         <span className="text-right">Balance</span>
                         <span className="text-right">% of Supply</span>
@@ -136,15 +136,15 @@ const ProfilePage = ({ defaultTab }: ProfilePageProps) => {
                             />
 
                             <div className="flex flex-col">
-                              <div className="font-medium text-base flex items-center gap-2">
-                                <span className=" leading-[24px]">{token.name}</span>
-                                <span className="text-secondary-text leading-[16px]">
+                              <div className="flex items-center gap-2 text-base font-medium">
+                                <span className="leading-[24px]">{token.name}</span>
+                                <span className="leading-[16px] text-secondary-text">
                                   {token.symbol}
                                 </span>
                               </div>
-                              <div className="text-xs flex items-center gap-2 ">
-                                <span className="text-black font-medium">{token.address}</span>
-                                <Icon name="copy" className="w-3 h-3 text-secondary-text" />
+                              <div className="flex items-center gap-2 text-xs">
+                                <span className="font-medium text-black">{token.address}</span>
+                                <Icon name="copy" className="h-3 w-3 text-secondary-text" />
                               </div>
                             </div>
                           </div>
@@ -158,7 +158,7 @@ const ProfilePage = ({ defaultTab }: ProfilePageProps) => {
                 ) : (
                   <div className="overflow-hidden">
                     <div className="divide-y divide-colorDivide">
-                      <div className="grid grid-cols-[1.5fr,1.2fr,1fr] py-3 text-base leading-[20px] text-secondary-text font-medium">
+                      <div className="grid grid-cols-[1.5fr,1.2fr,1fr] py-3 text-base font-medium leading-[20px] text-secondary-text">
                         <span className="text-black">NFT</span>
                         <span className="text-right">% of Supply</span>
                         <span className="text-right">Total of Supply</span>
@@ -177,9 +177,9 @@ const ProfilePage = ({ defaultTab }: ProfilePageProps) => {
                             <div className="flex flex-col">
                               <span className="font-medium">{nft.name}</span>
 
-                              <div className="text-xs flex items-center gap-2 ">
+                              <div className="flex items-center gap-2 text-xs">
                                 <span className="text-xs text-gray-500">{nft.address}</span>
-                                <Icon name="copy" className="w-3 h-3 text-secondary-text" />
+                                <Icon name="copy" className="h-3 w-3 text-secondary-text" />
                               </div>
                             </div>
                           </div>

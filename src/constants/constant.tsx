@@ -4,6 +4,7 @@ import avt3 from '../assets/images/avt3.png'
 import avt4 from '../assets/images/avt4.png'
 import avt5 from '../assets/images/avt5.png'
 import avt6 from '../assets/images/avt6.png'
+import { Icon } from '../components/ui/Icon'
 
 export const MOCK_TOKENS = [
   {
@@ -76,5 +77,33 @@ export const MOCK_NFTS = [
     percent: '100%',
     total: 200,
     avatar: avt6,
+  },
+]
+
+export const SIDEBAR_ITEMS = [
+  {
+    key: 'dashboard',
+    label: 'Dashboard',
+    icon: <Icon name="Dashboard" />,
+    navigate: '/dashboard',
+  },
+  {
+    key: 'token',
+    label: 'Token',
+    icon: <Icon name="Token" variant={'fill'} />,
+    children: [
+      { key: 'token-create', label: 'Token Creator', navigate: '/token/creator' },
+      { key: 'token-list', label: 'Token List', navigate: '/token/list' },
+    ],
+    navigate: '/token/create',
+  },
+  {
+    key: 'nft',
+    label: 'NFT',
+    icon: <Icon name="Nft" variant={'fill'} />,
+    children: [
+      { key: 'nft-collection', label: 'NFT Collection', navigate: '/nft/collection' },
+      { key: 'nft-list', label: 'NFT List', naviagte: '/nft/list' },
+    ],
   },
 ]
