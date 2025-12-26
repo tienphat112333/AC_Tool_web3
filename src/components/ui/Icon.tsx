@@ -38,13 +38,15 @@ const iconPaths = {
     </>
   ),
   telegram: (
-    <path
-      d="M15.4665 1.60156L0.533203 6.9349L4.79987 9.06823L11.1999 4.80156L6.9332 10.1349L13.3332 14.4016L15.4665 1.60156Z"
-      stroke="currentColor"
-      fill="currentColor"
-      stroke-width="1.06667"
-      stroke-linejoin="round"
-    />
+    <>
+      <path
+        d="M15.4665 1.60156L0.533203 6.9349L4.79987 9.06823L11.1999 4.80156L6.9332 10.1349L13.3332 14.4016L15.4665 1.60156Z"
+        stroke="currentColor"
+        fill="none"
+        stroke-width="1.06667"
+        stroke-linejoin="round"
+      />
+    </>
   ),
   discord: (
     <>
@@ -80,31 +82,24 @@ const iconPaths = {
   ),
   web: (
     <>
-      <g clip-path="url(#clip0_14_417)">
-        <path
-          d="M8.00065 14.6693C11.6825 14.6693 14.6673 11.6845 14.6673 8.0026C14.6673 4.32071 11.6825 1.33594 8.00065 1.33594C4.31875 1.33594 1.33398 4.32071 1.33398 8.0026C1.33398 11.6845 4.31875 14.6693 8.00065 14.6693Z"
-          stroke="#787575"
-          stroke-linecap="round"
-          stroke-linejoin="round"
-        />
-        <path
-          d="M8.00065 14.6693C9.47341 14.6693 10.6673 11.6845 10.6673 8.0026C10.6673 4.32071 9.47341 1.33594 8.00065 1.33594C6.52789 1.33594 5.33398 4.32071 5.33398 8.0026C5.33398 11.6845 6.52789 14.6693 8.00065 14.6693Z"
-          stroke="#787575"
-          stroke-linecap="round"
-          stroke-linejoin="round"
-        />
-        <path
-          d="M1.33398 8.00391H14.6673"
-          stroke="#787575"
-          stroke-linecap="round"
-          stroke-linejoin="round"
-        />
-      </g>
-      <defs>
-        <clipPath id="clip0_14_417">
-          <rect width="16" height="16" fill="white" />
-        </clipPath>
-      </defs>
+      <path
+        d="M7.16667 13.8333C10.8486 13.8333 13.8333 10.8486 13.8333 7.16667C13.8333 3.48477 10.8486 0.5 7.16667 0.5C3.48477 0.5 0.5 3.48477 0.5 7.16667C0.5 10.8486 3.48477 13.8333 7.16667 13.8333Z"
+        stroke="currentColor"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      />
+      <path
+        d="M7.16667 13.8333C8.63943 13.8333 9.83333 10.8486 9.83333 7.16667C9.83333 3.48477 8.63943 0.5 7.16667 0.5C5.69391 0.5 4.5 3.48477 4.5 7.16667C4.5 10.8486 5.69391 13.8333 7.16667 13.8333Z"
+        stroke="currentColor"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      />
+      <path
+        d="M0.5 7.16797H13.8333"
+        stroke="currentColor"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      />
     </>
   ),
   github: (
