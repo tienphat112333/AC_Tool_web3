@@ -1,6 +1,9 @@
+import api from "./api"
+import { AxiosError } from 'axios';
 export interface AuthResponse {
   success: boolean
   message?: string
+  data?: unknown
 }
 
 /**
@@ -43,16 +46,19 @@ export const mockLogin = (walletAddress: string, password: string): AuthResponse
   }
 }
 
-/**
- * Mock register function
- * Accepts wallet address (exactly 10 characters) and any non-empty password
- */
-export const mockRegister = (
+export const signUp = async(
   walletAddress: string,
   password: string,
-  confirmPassword: string
-): AuthResponse => {
+): Promise<AuthResponse> => {
   // Basic validation
+  if(!walletAddress.startsWith('0')) {
+    return {
+      success: false,
+      message: 'Invalid wallet address format. Must be start with 0.',
+    }
+  }
+
+
   if (!isValidWalletAddress(walletAddress)) {
     return {
       success: false,
@@ -67,13 +73,6 @@ export const mockRegister = (
     }
   }
 
-  if (password !== confirmPassword) {
-    return {
-      success: false,
-      message: 'Passwords do not match',
-    }
-  }
-
   if (password.length < 6) {
     return {
       success: false,
@@ -81,13 +80,25 @@ export const mockRegister = (
     }
   }
 
-  // Mock successful registration
-  localStorage.setItem('isAuthenticated', 'true')
-  localStorage.setItem('walletAddress', walletAddress)
+  try {
+    const response = await api.post('/users/sign-up', { walletAddress, password });
+    
+    return {
+      success: true,
+      data: response.data.data,
+      message: response.data.message
+    };
+  } catch (error) {
+    let errorMessage = 'Register fail!';
 
-  return {
-    success: true,
-    message: 'Registration successful',
+    if (error instanceof AxiosError && error.response) {
+      errorMessage = (error.response.data as { message: string }).message || errorMessage;
+    }
+    
+    return {
+      success: false,
+      message: errorMessage
+    };
   }
 }
 

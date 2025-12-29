@@ -20,7 +20,6 @@ const ConnectPage = ({ onConnectClick }: ConnectPageProps) => {
           className=" rounded-lg w-full h-[613px] relative"
         />
       </div>
-
       <div className="absolute w-[610px] h-[220px] top-[200px] flex flex-col justify-center items-center gap-8">
         <h1 className="font-medium text-[40px] leading-[48px]">Tokens & NFT with Ease</h1>
         <div className="text-2xl leading-[30px] w-[610px] flex flex-col justify-center items-center">

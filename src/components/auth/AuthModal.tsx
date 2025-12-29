@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { Eye, EyeOff, X } from 'lucide-react'
 import { Input } from '../ui/input'
 import { Button } from '../ui/button'
-import { mockLogin, mockRegister } from '../../utils/auth'
+import { mockLogin, signUp } from '../../utils/auth'
 
 interface AuthModalProps {
   mode: 'register' | 'signin'
@@ -29,7 +29,7 @@ const AuthModal = ({ mode, isOpen, onClose, onModeSwitch, onSuccess }: AuthModal
     try {
       let response
       if (mode === 'register') {
-        response = mockRegister(walletAddress, password, confirmPassword)
+        response = await signUp(walletAddress, password)
       } else {
         response = mockLogin(walletAddress, password)
       }
@@ -37,6 +37,7 @@ const AuthModal = ({ mode, isOpen, onClose, onModeSwitch, onSuccess }: AuthModal
       if (response.success) {
         onSuccess()
         handleClose()
+        console.log('dang ky thanh cong:', response.data)
       } else {
         setError(response.message || 'Authentication failed')
       }
