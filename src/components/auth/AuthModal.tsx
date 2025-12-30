@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { Eye, EyeOff, X } from 'lucide-react'
 import { Input } from '../ui/input'
 import { Button } from '../ui/button'
-import { mockLogin, signUp } from '../../utils/auth'
+import { signIn, signUp } from '../../utils/auth'
 
 interface AuthModalProps {
   mode: 'register' | 'signin'
@@ -31,12 +31,26 @@ const AuthModal = ({ mode, isOpen, onClose, onModeSwitch, onSuccess }: AuthModal
       if (mode === 'register') {
         response = await signUp(walletAddress, password)
       } else {
-        response = mockLogin(walletAddress, password)
+        response = await signIn(walletAddress, password)
+        
       }
 
       if (response.success) {
-        onSuccess()
-        handleClose()
+        if(mode === 'register'){
+          alert('Register success!')
+          onModeSwitch()
+        }else{
+          const token = response.data
+          if(typeof token === 'string'){
+
+            localStorage.setItem('accessToken', token)
+          }
+          localStorage.setItem('isAuthenticated', 'true')
+          localStorage.setItem('walletAddress', walletAddress)
+          onSuccess()
+          handleClose()
+        }
+        
         console.log('dang ky thanh cong:', response.data)
       } else {
         setError(response.message || 'Authentication failed')

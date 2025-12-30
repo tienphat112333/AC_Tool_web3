@@ -34,7 +34,7 @@ const ConnectPageWithLayout = () => {
   }
 
   const handleAuthSuccess = () => {
-    navigate('/dashboard')
+    navigate('/dashboard', {replace: true})
   }
 
   return (

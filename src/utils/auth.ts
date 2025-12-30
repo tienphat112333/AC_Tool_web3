@@ -16,33 +16,48 @@ const isValidWalletAddress = (address: string): boolean => {
   return address.length === 10
 }
 
-/**
- * Mock login function
- * Accepts wallet address (exactly 10 characters) and any non-empty password
- */
-export const mockLogin = (walletAddress: string, password: string): AuthResponse => {
-  // Basic validation
-  if (!isValidWalletAddress(walletAddress)) {
+
+const validateAuthInputs = (walletAddress: string, password: string, isSignUp: boolean = false): string | null => {
+  if(!isValidWalletAddress(walletAddress)){
+    return 'Invalid wallet address format. Must be exactly 10 characters.'
+  }
+  if(!password || password.length === 0){
+    return 'Password is required'
+  }
+  if(isSignUp && !walletAddress.startsWith('0')){
+    return 'Invalid wallet address format. Must be start with 0.'
+  }
+  if(isSignUp && password.length < 6){
+    return 'Password must be at least 6 characters'
+  }
+  return null
+}
+
+export const signIn = async(walletAddress: string, password: string): Promise<AuthResponse>  => {
+  const errorAuthInput = validateAuthInputs(walletAddress, password, false)
+  if(errorAuthInput){
     return {
       success: false,
-      message: 'Invalid wallet address format. Must be exactly 10 characters.',
+      message: errorAuthInput
     }
   }
 
-  if (!password || password.length === 0) {
+  try {
+    const response = await api.post('/users/sign-in', {walletAddress, password})
+    return {
+      success: true,
+      message: response.data.message,
+      data: response.data.data
+    }
+  } catch (error) {
+    let errorMessage = 'Sign-in fail!'
+    if (error instanceof AxiosError && error.response){
+      errorMessage = (error.response.data as {message: string}).message || errorMessage
+    }
     return {
       success: false,
-      message: 'Password is required',
+      message: errorMessage
     }
-  }
-
-  // Mock successful login
-  localStorage.setItem('isAuthenticated', 'true')
-  localStorage.setItem('walletAddress', walletAddress)
-
-  return {
-    success: true,
-    message: 'Login successful',
   }
 }
 
@@ -50,39 +65,15 @@ export const signUp = async(
   walletAddress: string,
   password: string,
 ): Promise<AuthResponse> => {
-  // Basic validation
-  if(!walletAddress.startsWith('0')) {
+  const errorAuthInput = validateAuthInputs(walletAddress, password, true)
+  if(errorAuthInput){
     return {
       success: false,
-      message: 'Invalid wallet address format. Must be start with 0.',
+      message: errorAuthInput
     }
   }
-
-
-  if (!isValidWalletAddress(walletAddress)) {
-    return {
-      success: false,
-      message: 'Invalid wallet address format. Must be exactly 10 characters.',
-    }
-  }
-
-  if (!password || password.length === 0) {
-    return {
-      success: false,
-      message: 'Password is required',
-    }
-  }
-
-  if (password.length < 6) {
-    return {
-      success: false,
-      message: 'Password must be at least 6 characters',
-    }
-  }
-
   try {
     const response = await api.post('/users/sign-up', { walletAddress, password });
-    
     return {
       success: true,
       data: response.data.data,
@@ -90,11 +81,9 @@ export const signUp = async(
     };
   } catch (error) {
     let errorMessage = 'Register fail!';
-
     if (error instanceof AxiosError && error.response) {
       errorMessage = (error.response.data as { message: string }).message || errorMessage;
     }
-    
     return {
       success: false,
       message: errorMessage
@@ -106,7 +95,7 @@ export const signUp = async(
  * Check if user is authenticated
  */
 export const isAuthenticated = (): boolean => {
-  return localStorage.getItem('isAuthenticated') === 'true'
+  return !!localStorage.getItem('accessToken')
 }
 
 /**
@@ -120,6 +109,7 @@ export const getWalletAddress = (): string | null => {
  * Logout function
  */
 export const logout = (): void => {
-  localStorage.removeItem('isAuthenticated')
+  localStorage.removeItem('accessToken')
   localStorage.removeItem('walletAddress')
+  localStorage.removeItem('isAuthenticated')
 }

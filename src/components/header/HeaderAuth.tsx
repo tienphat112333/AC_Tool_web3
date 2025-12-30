@@ -25,7 +25,7 @@ const HeaderAuth = ({ title = 'New Transaction' }: HeaderAuthProps) => {
   const handleLogout = () => {
     setOpen(false)
     logout()
-    navigate('/')
+    navigate('/', {replace: true})
   }
 
   return (

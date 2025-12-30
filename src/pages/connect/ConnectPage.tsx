@@ -1,5 +1,8 @@
+import { useNavigate } from 'react-router-dom'
 import Bg1 from '../../assets/images/BG1.png'
 import { Button } from '../../components/ui/button'
+import { useEffect } from 'react'
+import { isAuthenticated } from '../../utils/auth'
 
 interface ConnectPageProps {
   onConnectClick: () => void
@@ -11,6 +14,12 @@ interface ConnectPageProps {
 }
 
 const ConnectPage = ({ onConnectClick }: ConnectPageProps) => {
+  const navigate = useNavigate()
+  useEffect(()=>{
+    if(isAuthenticated()){
+      navigate('/dashboard', {replace: true})
+    }
+  },[navigate])
   return (
     <main className="flex flex-col justify-center items-center px-2 relative">
       <div className="py-2">
