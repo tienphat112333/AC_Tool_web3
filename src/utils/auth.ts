@@ -1,10 +1,7 @@
 import api from "./api"
 import { AxiosError } from 'axios';
-export interface AuthResponse {
-  success: boolean
-  message?: string
-  data?: unknown
-}
+import { UserProfile } from "../types/user";
+import { AuthResponse } from "../types/user";
 
 /**
  * Validates wallet address format
@@ -91,25 +88,49 @@ export const signUp = async(
   }
 }
 
-/**
- * Check if user is authenticated
- */
 export const isAuthenticated = (): boolean => {
   return !!localStorage.getItem('accessToken')
 }
 
-/**
- * Get current wallet address
- */
 export const getWalletAddress = (): string | null => {
   return localStorage.getItem('walletAddress')
 }
 
-/**
- * Logout function
- */
 export const logout = (): void => {
   localStorage.removeItem('accessToken')
   localStorage.removeItem('walletAddress')
   localStorage.removeItem('isAuthenticated')
+}
+
+export const getUserProfile = async(): Promise<UserProfile | null> => {
+  try {
+    const token = localStorage.getItem('accessToken')
+    if(!token) return null
+    const response = await api.get('/users/profile', {
+    headers: {
+        Authorization: `Bearer ${token}`
+      }
+    })
+    return response.data.data
+  } catch (error) {
+    console.error('loi khi lay thong tin user:', error)
+    return null
+  }
+}
+
+export const updateUserProfile = async (data: Partial<UserProfile>): Promise<UserProfile | null> => {
+  try {
+    const token = localStorage.getItem('accessToken')
+    if(!token) return null
+
+    const response = await api.put('users/profile', data, {
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
+    })
+    return response.data.data
+  } catch (error){
+    console.error('Update profile fail:', error)
+    throw error
+  }
 }

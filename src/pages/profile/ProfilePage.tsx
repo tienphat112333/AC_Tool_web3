@@ -1,36 +1,40 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Sidebar } from '../../components/sidebar'
 import { HeaderAuth } from '../../components/header'
 import { Button } from '../../components/ui/button'
-import { EditProfileModal, type ProfileData } from '../../components/profile'
+import { EditProfileModal } from '../../components/profile'
 import { Icon } from '../../components/ui/Icon'
 import Avata from '../../assets/images/Avatar.png'
 import { MOCK_TOKENS, MOCK_NFTS } from '../../constants/constant'
-
+import { UserProfile } from '../../types/user'
+import { getUserProfile } from '../../utils/auth'
 type ProfileTab = 'tokens' | 'nfts'
 
 interface ProfilePageProps {
   defaultTab: ProfileTab
 }
 
-const mockProfile: ProfileData = {
-  name: 'John',
-  biography: '',
-}
-
 const ProfilePage = ({ defaultTab }: ProfilePageProps) => {
   const [activeTab, setActiveTab] = useState<ProfileTab>(defaultTab)
-  const [profile, setProfile] = useState<ProfileData>(mockProfile)
+  const [profile, setProfile] = useState<UserProfile | null>(null)
   const [isEditOpen, setIsEditOpen] = useState(false)
   const navigate = useNavigate()
-
+  useEffect(()=>{
+    const fetchData = async () => {
+      const userData = await getUserProfile()
+      if(userData){
+        setProfile(userData)
+      }
+    }
+    fetchData()
+  },[])
   const handleTabChange = (tab: ProfileTab) => {
     setActiveTab(tab)
     navigate(tab === 'tokens' ? '/profile/tokens' : '/profile/nfts', { replace: true })
   }
 
-  const handleSaveProfile = (data: ProfileData) => {
+  const handleSaveProfile = (data: UserProfile) => {
     setProfile(data)
   }
 
@@ -47,8 +51,8 @@ const ProfilePage = ({ defaultTab }: ProfilePageProps) => {
               <div className="flex items-center gap-3">
                 <img src={Avata} alt="avata user" className="h-10 w-10" />
                 <div className="text-sm">
-                  <p className="text-[16px] font-semibold">{profile.name}</p>
-                  <p className="text-xs text-secondary-text">0x4aq...gfr6j5lda</p>
+                  <p className="text-[16px] font-semibold">{profile?.username || 'no name yet'}</p>
+                  <p className="text-xs text-secondary-text">{profile?.walletAddress}</p>
                 </div>
               </div>
 
@@ -59,14 +63,14 @@ const ProfilePage = ({ defaultTab }: ProfilePageProps) => {
                 </div>
                 <div>
                   <p className="mb-2 text-lg font-medium leading-[24px]">Biography</p>
-                  <p className="text-sm text-secondary-text">{profile.biography || 'None'}</p>
+                  <p className="text-sm text-secondary-text">{profile?.bio|| 'None'}</p>
                 </div>
                 <div>
                   <p className="mb-2 text-lg font-medium leading-[24px]">Social Links</p>
                   <div className="mt-1 flex gap-2 text-xs text-secondary-text">
-                    <Icon name="Twitter" variant={'fill'} />
-                    <Icon name="github" variant={'fill'} />
-                    <Icon name="Tele" variant={'fill'} />
+                    <a href={profile?.xUrl} target='_blank'><Icon name="Twitter" variant={'fill'} /></a>
+                    <a href={profile?.xUrl} target='_blank'><Icon name="github" variant={'fill'} /></a>
+                    <a href={profile?.xUrl} target='_blank'><Icon name="Tele" variant={'fill'} /></a>
                   </div>
                 </div>
               </div>

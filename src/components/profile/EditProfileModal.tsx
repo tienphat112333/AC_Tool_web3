@@ -2,29 +2,52 @@ import { useState } from 'react'
 import { Button } from '../ui/button'
 import { Input } from '../ui/input'
 import { Icon } from '../ui/Icon'
-import type { ProfileData } from '../../types/user'
+import type { UserProfile } from '../../types/user'
+import { updateUserProfile } from '../../utils/auth'
 
 interface EditProfileModalProps {
   isOpen: boolean
   onClose: () => void
-  initialData: ProfileData
-  onSave: (data: ProfileData) => void
+  initialData: UserProfile | null
+  onSave: (data: UserProfile) => void
 }
 
 const EditProfileModal = ({ isOpen, onClose, initialData, onSave }: EditProfileModalProps) => {
-  const [name, setName] = useState(initialData.name)
-  const [biography, setBiography] = useState(initialData.biography)
-
+  const [name, setName] = useState(initialData?.username||'')
+  const [biography, setBiography] = useState(initialData?.bio||'')
+  const [twitter, setTwitter] = useState('')
+  const [telegram, setTelegram] = useState('')
+  const [discord, setDiscord] = useState('')
+  const isSocialInputted = twitter.trim() !== '' || telegram.trim() !== '' || discord.trim() !== '';
+  const isNameChanged = name !== (initialData?.username || '');
+  const isBioChanged = biography !== (initialData?.bio || '');
+  const isSaveEnabled = isSocialInputted || isNameChanged || isBioChanged;
   const handleClose = () => {
-    setName(initialData.name)
-    setBiography(initialData.biography)
+    setName(initialData?.username||'')
+    setBiography(initialData?.bio||'')
     onClose()
   }
 
-  const handleSave = (e: React.FormEvent) => {
+  const handleSave = async (e: React.FormEvent) => {
     e.preventDefault()
-    onSave({ name, biography })
-    onClose()
+    if(!initialData) return
+    try {
+      const newProfile = await updateUserProfile({
+        username: name,
+        bio: biography,
+        telegramUrl: telegram,
+        xUrl: twitter,
+        githubUrl: discord
+      })
+      if(newProfile){
+        onSave(newProfile)
+        alert('update thanh cong!')
+        onClose()
+      }
+    } catch (error) {
+      console.log('loi khi update:', error)
+      alert('update loi')
+    }
   }
 
   if (!isOpen) return null
@@ -87,21 +110,27 @@ const EditProfileModal = ({ isOpen, onClose, initialData, onSave }: EditProfileM
                 icon={<Icon name="Twitter" variant={'fill'} />}
                 className="w-[452px] h-[38px] p-[10px]"
                 placeholder="Not connected"
+                value={twitter}
+                onChange={(e) => setTwitter(e.target.value)}
               />
               <Input
                 icon={<Icon name="Tele" variant={'fill'} />}
                 className="w-[452px] h-[38px] p-[10px]"
                 placeholder="Not connected"
+                value={telegram}
+                onChange={(e) => setTelegram(e.target.value)}
               />
               <Input
                 icon={<Icon name="discord" variant={'stroke'} />}
                 className="w-[452px] h-[38px] p-[10px]"
                 placeholder="Not connected"
+                value={discord}
+                onChange={(e) => setDiscord(e.target.value)}
               />
             </div>
           </div>
 
-          <Button type="submit" variant="disable" size="lg" className="w-full h-12">
+          <Button type="submit" variant={isSaveEnabled? "default" : "disable"} size="lg" className="w-full h-12">
             Save
           </Button>
         </form>

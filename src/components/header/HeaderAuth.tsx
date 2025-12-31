@@ -1,9 +1,10 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import Avatar from '../../assets/images/Avatar.png'
 import ArrowDown from '../../assets/icons/arrow-down.svg'
-import { logout } from '../../utils/auth'
+import { getUserProfile, logout } from '../../utils/auth'
 import { Icon } from '../ui/Icon'
+import { UserProfile } from '../../types/user'
 
 interface HeaderAuthProps {
   title?: string
@@ -12,7 +13,16 @@ interface HeaderAuthProps {
 const HeaderAuth = ({ title = 'New Transaction' }: HeaderAuthProps) => {
   const [open, setOpen] = useState(false)
   const navigate = useNavigate()
-
+  const [user, setUser] = useState<UserProfile | null>(null)
+  useEffect(()=>{
+    const fetchData = async () => {
+      const userData = await getUserProfile()
+      if(userData) {
+        setUser(userData)
+      }
+    }
+    fetchData()
+  }, [])
   const handleToggle = () => {
     setOpen((prev) => !prev)
   }
@@ -40,7 +50,7 @@ const HeaderAuth = ({ title = 'New Transaction' }: HeaderAuthProps) => {
           <img src={Avatar} alt="user avatar" />
           <div className="flex w-[135px] items-center justify-between gap-6 h-9">
             <div className="h-9 w-[95px] text-xs leading-[18px] text-left">
-              <h3 className="font-medium">0x4aq...gfr6j5lda</h3>
+              <h3 className="font-medium">{user?.walletAddress}</h3>
               <p className="text-secondary-text">200 ZKN</p>
             </div>
             <img src={ArrowDown} alt="arrow down icon" />
