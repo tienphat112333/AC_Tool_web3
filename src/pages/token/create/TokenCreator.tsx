@@ -18,6 +18,7 @@ const TokenCreator = () => {
     handleSubmit,
     formState: { errors, isSubmitting },
     setValue,
+    reset,
   } = useForm({
     resolver: zodResolver(createTokenSchema),
     defaultValues: {
@@ -51,6 +52,7 @@ const TokenCreator = () => {
       const submitData = await createToken(formData);
       if (submitData) {
         alert("Token created success!");
+        reset();
       }
     } catch (error) {
       const err = error as AxiosError<{ message: string }>;

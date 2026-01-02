@@ -9,3 +9,13 @@ export const createToken = async (formData: FormData) => {
     throw error;
   }
 };
+
+export const getTokens = async (page: number, limit: number) => {
+    try{
+        const response = await api.get(`/tokens?page=${page}&limit=${limit}`)
+        return response.data
+    }catch(error){
+        console.error('Error fetching tokens:', error)
+        throw error
+    }
+}
