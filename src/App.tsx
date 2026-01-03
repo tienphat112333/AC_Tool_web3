@@ -1,41 +1,41 @@
-import { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
-import { Footer } from './components/footer'
-import { HeaderGuest } from './components/header'
-import { ConnectPage } from './pages/connect'
-import { DashboardPage } from './pages/dashboard'
-import { ProfilePage } from './pages/profile'
-import { isAuthenticated } from './utils/auth'
-import { AuthModal } from './components/auth'
-import { TokenCreator } from './pages/token/create'
-import { TokenList } from './pages/token/list'
-
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { Footer } from "./components/footer";
+import { HeaderGuest } from "./components/header";
+import { ConnectPage } from "./pages/connect";
+import { DashboardPage } from "./pages/dashboard";
+import { ProfilePage } from "./pages/profile";
+import { isAuthenticated } from "./utils/auth";
+import { AuthModal } from "./components/auth";
+import { TokenCreator } from "./pages/token/create";
+import { TokenList } from "./pages/token/list";
+import { ToastContainer } from "react-toastify";
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
-  return isAuthenticated() ? <>{children}</> : <Navigate to="/" replace />
-}
+  return isAuthenticated() ? <>{children}</> : <Navigate to="/" replace />;
+};
 
 const ConnectPageWithLayout = () => {
-  const [isModalOpen, setIsModalOpen] = useState(false)
-  const [modalMode, setModalMode] = useState<'register' | 'signin'>('signin')
-  const navigate = useNavigate()
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [modalMode, setModalMode] = useState<"register" | "signin">("signin");
+  const navigate = useNavigate();
 
   const handleConnectClick = () => {
-    setIsModalOpen(true)
-    setModalMode('signin')
-  }
+    setIsModalOpen(true);
+    setModalMode("signin");
+  };
 
   const handleModalClose = () => {
-    setIsModalOpen(false)
-  }
+    setIsModalOpen(false);
+  };
 
   const handleModeSwitch = () => {
-    setModalMode((prev) => (prev === 'register' ? 'signin' : 'register'))
-  }
+    setModalMode((prev) => (prev === "register" ? "signin" : "register"));
+  };
 
   const handleAuthSuccess = () => {
-    navigate('/dashboard', {replace: true})
-  }
+    navigate("/dashboard", { replace: true });
+  };
 
   return (
     <>
@@ -57,12 +57,25 @@ const ConnectPageWithLayout = () => {
         onSuccess={handleAuthSuccess}
       />
     </>
-  )
-}
+  );
+};
 
 const App = () => {
   return (
     <BrowserRouter>
+      <ToastContainer
+        position="top-right"
+        autoClose={3000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="light"
+      />
+
       <Routes>
         <Route path="/" element={<ConnectPageWithLayout />} />
         <Route
@@ -108,7 +121,7 @@ const App = () => {
         />
       </Routes>
     </BrowserRouter>
-  )
-}
+  );
+};
 
-export default App
+export default App;

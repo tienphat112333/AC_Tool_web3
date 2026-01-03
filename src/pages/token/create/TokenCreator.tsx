@@ -59,7 +59,6 @@ const TokenCreator = () => {
       const message = err.response?.data.message || "Some thing went wrong";
       alert(message);
     }
-    console.log("co data ta ne`:", data);
   };
   const handleUploadImage = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files.length > 0) {

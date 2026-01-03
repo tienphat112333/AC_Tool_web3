@@ -102,27 +102,27 @@ const TokenList = () => {
                 </div>
               </div>
             ))}
-          </div>
-          <div className="mt-4 flex items-center justify-center gap-4 pb-4">
-            <Button
-              variant="secondary"
-              disabled={currentPage === 1} // Trang 1 thì chặn nút Back
-              onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
-            >
-              Previous
-            </Button>
+            <div className="mt-4 flex items-center justify-center gap-4 pb-4">
+              <Button
+                variant="secondary"
+                disabled={currentPage === 1} // Trang 1 thì chặn nút Back
+                onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+              >
+                Previous
+              </Button>
 
-            <span className="text-sm font-medium text-secondary-text">
-              Page {currentPage} of {totalPages || 1}
-            </span>
+              <span className="text-sm font-medium text-secondary-text">
+                Page {currentPage} of {totalPages || 1}
+              </span>
 
-            <Button
-              variant="secondary"
-              disabled={currentPage >= totalPages} // Trang cuối thì chặn nút Next
-              onClick={() => setCurrentPage((prev) => prev + 1)}
-            >
-              Next
-            </Button>
+              <Button
+                variant="secondary"
+                disabled={currentPage >= totalPages} // Trang cuối thì chặn nút Next
+                onClick={() => setCurrentPage((prev) => prev + 1)}
+              >
+                Next
+              </Button>
+            </div>
           </div>
         </section>
       </div>

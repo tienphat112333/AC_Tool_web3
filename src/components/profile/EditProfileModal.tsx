@@ -1,56 +1,63 @@
-import { useState } from 'react'
-import { Button } from '../ui/button'
-import { Input } from '../ui/input'
-import { Icon } from '../ui/Icon'
-import type { UserProfile } from '../../types/user'
-import { updateUserProfile } from '../../utils/auth'
+import { useState } from "react";
+import { Button } from "../ui/button";
+import { Input } from "../ui/input";
+import { Icon } from "../ui/Icon";
+import type { UserProfile } from "../../types/user";
+import { updateUserProfile } from "../../utils/auth";
+import { toast } from "react-toastify";
+import { getErrorMessage } from "../../utils/error";
 
 interface EditProfileModalProps {
-  isOpen: boolean
-  onClose: () => void
-  initialData: UserProfile | null
-  onSave: (data: UserProfile) => void
+  isOpen: boolean;
+  onClose: () => void;
+  initialData: UserProfile | null;
+  onSave: (data: UserProfile) => void;
 }
 
-const EditProfileModal = ({ isOpen, onClose, initialData, onSave }: EditProfileModalProps) => {
-  const [name, setName] = useState(initialData?.username||'')
-  const [biography, setBiography] = useState(initialData?.bio||'')
-  const [twitter, setTwitter] = useState('')
-  const [telegram, setTelegram] = useState('')
-  const [discord, setDiscord] = useState('')
-  const isSocialInputted = twitter.trim() !== '' || telegram.trim() !== '' || discord.trim() !== '';
-  const isNameChanged = name !== (initialData?.username || '');
-  const isBioChanged = biography !== (initialData?.bio || '');
+const EditProfileModal = ({
+  isOpen,
+  onClose,
+  initialData,
+  onSave,
+}: EditProfileModalProps) => {
+  const [name, setName] = useState(initialData?.username || "");
+  const [biography, setBiography] = useState(initialData?.bio || "");
+  const [twitter, setTwitter] = useState("");
+  const [telegram, setTelegram] = useState("");
+  const [discord, setDiscord] = useState("");
+  const isSocialInputted =
+    twitter.trim() !== "" || telegram.trim() !== "" || discord.trim() !== "";
+  const isNameChanged = name !== (initialData?.username || "");
+  const isBioChanged = biography !== (initialData?.bio || "");
   const isSaveEnabled = isSocialInputted || isNameChanged || isBioChanged;
   const handleClose = () => {
-    setName(initialData?.username||'')
-    setBiography(initialData?.bio||'')
-    onClose()
-  }
+    setName(initialData?.username || "");
+    setBiography(initialData?.bio || "");
+    onClose();
+  };
 
   const handleSave = async (e: React.FormEvent) => {
-    e.preventDefault()
-    if(!initialData) return
+    e.preventDefault();
+    if (!initialData) return;
     try {
       const newProfile = await updateUserProfile({
         username: name,
         bio: biography,
         telegramUrl: telegram,
         xUrl: twitter,
-        githubUrl: discord
-      })
-      if(newProfile){
-        onSave(newProfile)
-        alert('update thanh cong!')
-        onClose()
+        githubUrl: discord,
+      });
+      if (newProfile) {
+        onSave(newProfile);
+        toast.success("update thanh cong");
+        onClose();
       }
     } catch (error) {
-      console.log('loi khi update:', error)
-      alert('update loi')
+      toast.error(getErrorMessage(error));
     }
-  }
+  };
 
-  if (!isOpen) return null
+  if (!isOpen) return null;
 
   return (
     <div
@@ -69,7 +76,9 @@ const EditProfileModal = ({ isOpen, onClose, initialData, onSave }: EditProfileM
           <Icon name="close" className="w-6 h-6" viewBox="0 0 24 24" />
         </button>
 
-        <h2 className="mb-6 text-center text-xl font-bold leading-[28px]">Edit Profile</h2>
+        <h2 className="mb-6 text-center text-xl font-bold leading-[28px]">
+          Edit Profile
+        </h2>
 
         <form className="flex flex-col gap-5" onSubmit={handleSave}>
           <div className="flex flex-col gap-2">
@@ -107,21 +116,21 @@ const EditProfileModal = ({ isOpen, onClose, initialData, onSave }: EditProfileM
             <p className="font-medium mb-2">Social Links</p>
             <div className="text-sm text-secondary-text flex flex-col gap-2">
               <Input
-                icon={<Icon name="Twitter" variant={'fill'} />}
+                icon={<Icon name="Twitter" variant={"fill"} />}
                 className="w-[452px] h-[38px] p-[10px]"
                 placeholder="Not connected"
                 value={twitter}
                 onChange={(e) => setTwitter(e.target.value)}
               />
               <Input
-                icon={<Icon name="Tele" variant={'fill'} />}
+                icon={<Icon name="Tele" variant={"fill"} />}
                 className="w-[452px] h-[38px] p-[10px]"
                 placeholder="Not connected"
                 value={telegram}
                 onChange={(e) => setTelegram(e.target.value)}
               />
               <Input
-                icon={<Icon name="discord" variant={'stroke'} />}
+                icon={<Icon name="discord" variant={"stroke"} />}
                 className="w-[452px] h-[38px] p-[10px]"
                 placeholder="Not connected"
                 value={discord}
@@ -130,13 +139,18 @@ const EditProfileModal = ({ isOpen, onClose, initialData, onSave }: EditProfileM
             </div>
           </div>
 
-          <Button type="submit" variant={isSaveEnabled? "default" : "disable"} size="lg" className="w-full h-12">
+          <Button
+            type="submit"
+            variant={isSaveEnabled ? "default" : "disable"}
+            size="lg"
+            className="w-full h-12"
+          >
             Save
           </Button>
         </form>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default EditProfileModal
+export default EditProfileModal;

@@ -1,78 +1,82 @@
-import { useState } from 'react'
-import { Eye, EyeOff, X } from 'lucide-react'
-import { Input } from '../ui/input'
-import { Button } from '../ui/button'
-import { signIn, signUp } from '../../utils/auth'
+import { useState } from "react";
+import { Eye, EyeOff, X } from "lucide-react";
+import { Input } from "../ui/input";
+import { Button } from "../ui/button";
+import { signIn, signUp } from "../../utils/auth";
+import { toast } from "react-toastify";
 
 interface AuthModalProps {
-  mode: 'register' | 'signin'
-  isOpen: boolean
-  onClose: () => void
-  onModeSwitch: () => void
-  onSuccess: () => void
+  mode: "register" | "signin";
+  isOpen: boolean;
+  onClose: () => void;
+  onModeSwitch: () => void;
+  onSuccess: () => void;
 }
 
-const AuthModal = ({ mode, isOpen, onClose, onModeSwitch, onSuccess }: AuthModalProps) => {
-  const [walletAddress, setWalletAddress] = useState('')
-  const [password, setPassword] = useState('')
-  const [confirmPassword, setConfirmPassword] = useState('')
-  const [showPassword, setShowPassword] = useState(false)
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false)
-  const [error, setError] = useState('')
-  const [isLoading, setIsLoading] = useState(false)
+const AuthModal = ({
+  mode,
+  isOpen,
+  onClose,
+  onModeSwitch,
+  onSuccess,
+}: AuthModalProps) => {
+  const [walletAddress, setWalletAddress] = useState("");
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [error, setError] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setError('')
-    setIsLoading(true)
+    e.preventDefault();
+    setError("");
+    setIsLoading(true);
 
     try {
-      let response
-      if (mode === 'register') {
-        response = await signUp(walletAddress, password)
+      let response;
+      if (mode === "register") {
+        response = await signUp(walletAddress, password);
       } else {
-        response = await signIn(walletAddress, password)
-        
+        response = await signIn(walletAddress, password);
       }
 
       if (response.success) {
-        if(mode === 'register'){
-          alert('Register success!')
-          onModeSwitch()
-        }else{
-          const token = response.data
-          if(typeof token === 'string'){
-
-            localStorage.setItem('accessToken', token)
+        if (mode === "register") {
+          toast(response.message);
+          onModeSwitch();
+        } else {
+          const token = response.data;
+          if (typeof token === "string") {
+            localStorage.setItem("accessToken", token);
           }
-          localStorage.setItem('isAuthenticated', 'true')
-          localStorage.setItem('walletAddress', walletAddress)
-          onSuccess()
-          handleClose()
+          localStorage.setItem("isAuthenticated", "true");
+          localStorage.setItem("walletAddress", walletAddress);
+          onSuccess();
+          toast(response.message);
+          handleClose();
         }
-        
-        console.log('dang ky thanh cong:', response.data)
       } else {
-        setError(response.message || 'Authentication failed')
+        setError(response.message || "Authentication failed");
       }
     } catch {
-      setError('An error occurred. Please try again.')
+      setError("An error occurred. Please try again.");
     } finally {
-      setIsLoading(false)
+      setIsLoading(false);
     }
-  }
+  };
 
   const handleClose = () => {
-    setWalletAddress('')
-    setPassword('')
-    setConfirmPassword('')
-    setError('')
-    setShowPassword(false)
-    setShowConfirmPassword(false)
-    onClose()
-  }
+    setWalletAddress("");
+    setPassword("");
+    setConfirmPassword("");
+    setError("");
+    setShowPassword(false);
+    setShowConfirmPassword(false);
+    onClose();
+  };
 
-  if (!isOpen) return null
+  if (!isOpen) return null;
 
   return (
     <div
@@ -94,7 +98,7 @@ const AuthModal = ({ mode, isOpen, onClose, onModeSwitch, onSuccess }: AuthModal
 
         {/* Title */}
         <h2 className="text-xl font-bold leading-[28px] text-center mb-6">
-          {mode === 'register' ? 'Register' : 'Sign In'}
+          {mode === "register" ? "Register" : "Sign In"}
         </h2>
 
         {/* Error Message */}
@@ -128,13 +132,16 @@ const AuthModal = ({ mode, isOpen, onClose, onModeSwitch, onSuccess }: AuthModal
 
           {/* Password */}
           <div>
-            <label htmlFor="password" className="block text-base leading-[24px] font-medium mb-2">
+            <label
+              htmlFor="password"
+              className="block text-base leading-[24px] font-medium mb-2"
+            >
               Password
             </label>
             <div className="relative">
               <Input
                 id="password"
-                type={showPassword ? 'text' : 'password'}
+                type={showPassword ? "text" : "password"}
                 placeholder="**********"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
@@ -146,7 +153,7 @@ const AuthModal = ({ mode, isOpen, onClose, onModeSwitch, onSuccess }: AuthModal
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
                 className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
-                aria-label={showPassword ? 'Hide password' : 'Show password'}
+                aria-label={showPassword ? "Hide password" : "Show password"}
               >
                 {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
               </button>
@@ -154,15 +161,18 @@ const AuthModal = ({ mode, isOpen, onClose, onModeSwitch, onSuccess }: AuthModal
           </div>
 
           {/* Confirm Password (Register mode only) */}
-          {mode === 'register' && (
+          {mode === "register" && (
             <div>
-              <label htmlFor="confirm-password" className="block text-sm font-medium mb-2">
+              <label
+                htmlFor="confirm-password"
+                className="block text-sm font-medium mb-2"
+              >
                 Confirm Password
               </label>
               <div className="relative">
                 <Input
                   id="confirm-password"
-                  type={showConfirmPassword ? 'text' : 'password'}
+                  type={showConfirmPassword ? "text" : "password"}
                   placeholder="**********"
                   value={confirmPassword}
                   onChange={(e) => setConfirmPassword(e.target.value)}
@@ -174,9 +184,15 @@ const AuthModal = ({ mode, isOpen, onClose, onModeSwitch, onSuccess }: AuthModal
                   type="button"
                   onClick={() => setShowConfirmPassword(!showConfirmPassword)}
                   className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
-                  aria-label={showConfirmPassword ? 'Hide password' : 'Show password'}
+                  aria-label={
+                    showConfirmPassword ? "Hide password" : "Show password"
+                  }
                 >
-                  {showConfirmPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+                  {showConfirmPassword ? (
+                    <EyeOff size={20} />
+                  ) : (
+                    <Eye size={20} />
+                  )}
                 </button>
               </div>
             </div>
@@ -188,19 +204,29 @@ const AuthModal = ({ mode, isOpen, onClose, onModeSwitch, onSuccess }: AuthModal
             className="w-full bg-primary hover:bg-primary-primary2 text-white h-12 rounded-lg"
             disabled={isLoading}
           >
-            {isLoading ? 'Processing...' : mode === 'register' ? 'Register' : 'Sign'}
+            {isLoading
+              ? "Processing..."
+              : mode === "register"
+              ? "Register"
+              : "Sign"}
           </Button>
         </form>
 
         {/* Mode Switch Link */}
         <div className="mt-4 text-center">
-          <button type="button" onClick={onModeSwitch} className="text-sm text-black underline">
-            {mode === 'register' ? 'You already have an Account?' : "You haven't Account?"}
+          <button
+            type="button"
+            onClick={onModeSwitch}
+            className="text-sm text-black underline"
+          >
+            {mode === "register"
+              ? "You already have an Account?"
+              : "You haven't Account?"}
           </button>
         </div>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default AuthModal
+export default AuthModal;

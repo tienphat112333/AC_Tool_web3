@@ -116,5 +116,5 @@ export const SIDEBAR_ITEMS = [
   },
 ];
 
-export const LIMIT_ITEMS_IN_PAGE = 10;
+export const LIMIT_ITEMS_IN_PAGE = 1;
 export const BACKEND_URL = "http://localhost:5035";
