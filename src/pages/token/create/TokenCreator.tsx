@@ -37,18 +37,15 @@ const TokenCreator = () => {
   });
   const onSubmit = async (data: CreateTokenFormValues) => {
     const formData = new FormData();
-    formData.append("name", data.name);
-    formData.append("symbol", data.symbol);
-    formData.append("decimals", data.decimals.toString());
-    formData.append("supply", data.supply.toString());
-    formData.append("description", data.description);
-    if (data.websiteUrl) formData.append("websiteUrl", data.websiteUrl);
-    if (data.telegramUrl) formData.append("telegramUrl", data.telegramUrl);
-    if (data.xUrl) formData.append("xUrl", data.xUrl);
-    if (data.discordUrl) formData.append("discordUrl", data.discordUrl);
-    if (data.image && data.image[0]) {
-      formData.append("image", data.image[0]);
-    }
+    Object.entries(data).forEach(([key, value]) => {
+      if (value === undefined || value === null) return;
+
+      if (key === "image" && value instanceof FileList) {
+        if (value[0]) formData.append("image", value[0]);
+      } else {
+        formData.append(key, value.toString());
+      }
+    });
     try {
       const submitData = await createToken(formData);
       if (submitData) {
