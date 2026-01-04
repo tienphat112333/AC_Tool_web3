@@ -47,9 +47,9 @@ const EditProfileModal = ({
         xUrl: twitter,
         githubUrl: discord,
       });
-      if (newProfile) {
-        onSave(newProfile);
-        toast.success("update thanh cong");
+      if (newProfile.success && newProfile.data) {
+        onSave(newProfile.data);
+        toast.success(newProfile.message);
         onClose();
       }
     } catch (error) {

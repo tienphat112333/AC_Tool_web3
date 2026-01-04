@@ -10,7 +10,8 @@ import {
   CreateTokenFormValues,
 } from "../../../schemas/tokenSchema";
 import { createToken } from "../../../utils/token";
-import { AxiosError } from "axios";
+import { toast } from "react-toastify";
+import { getErrorMessage } from "../../../utils/error";
 
 const TokenCreator = () => {
   const {
@@ -51,13 +52,11 @@ const TokenCreator = () => {
     try {
       const submitData = await createToken(formData);
       if (submitData) {
-        alert("Token created success!");
+        toast.success(submitData.message);
         reset();
       }
     } catch (error) {
-      const err = error as AxiosError<{ message: string }>;
-      const message = err.response?.data.message || "Some thing went wrong";
-      alert(message);
+      toast.error(getErrorMessage(error));
     }
   };
   const handleUploadImage = (e: React.ChangeEvent<HTMLInputElement>) => {

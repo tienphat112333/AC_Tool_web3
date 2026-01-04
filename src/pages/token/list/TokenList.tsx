@@ -7,6 +7,7 @@ import { MinModal } from "../../../components/mint/MintModal";
 import { CreateTokenFormValues } from "../../../schemas/tokenSchema";
 import { getTokens } from "../../../utils/token";
 import { BACKEND_URL, LIMIT_ITEMS_IN_PAGE } from "../../../constants/constant";
+import { getErrorMessage } from "../../../utils/error";
 
 const TokenList = () => {
   const [openMintModal, setOpenMintModal] = useState(false);
@@ -27,7 +28,7 @@ const TokenList = () => {
           setTotalPages(Math.ceil(total / LIMIT_ITEMS_IN_PAGE));
         }
       } catch (error) {
-        console.error("Failed to fetch tokens:", error);
+        console.error(getErrorMessage(error));
       }
     };
 

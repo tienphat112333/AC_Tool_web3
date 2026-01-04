@@ -1,15 +1,15 @@
 export interface UserProfile {
-  walletAddress?: string
-  username?: string
-  bio?: string
-  balance?: string
-  telegramUrl?: string
-  xUrl?: string
-  githubUrl?: string
+  walletAddress?: string;
+  username?: string;
+  bio?: string;
+  balance?: string;
+  telegramUrl?: string;
+  xUrl?: string;
+  githubUrl?: string;
 }
 
-export interface AuthResponse {
-  success: boolean
-  message?: string
-  data?: unknown
+export interface ApiResponse<T> {
+  success: boolean;
+  message: string;
+  data?: T;
 }

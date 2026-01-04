@@ -15,6 +15,7 @@ import { UserProfile } from "../../types/user";
 import { getUserProfile } from "../../utils/auth";
 import { getTokens } from "../../utils/token";
 import { CreateTokenFormValues } from "../../schemas/tokenSchema";
+import { getErrorMessage } from "../../utils/error";
 type ProfileTab = "tokens" | "nfts";
 
 interface ProfilePageProps {
@@ -32,9 +33,13 @@ const ProfilePage = ({ defaultTab }: ProfilePageProps) => {
   const navigate = useNavigate();
   useEffect(() => {
     const fetchData = async () => {
-      const userData = await getUserProfile();
-      if (userData) {
-        setProfile(userData);
+      try {
+        const userData = await getUserProfile();
+        if (userData.success && userData.data) {
+          setProfile(userData.data);
+        }
+      } catch (error) {
+        console.error(error);
       }
     };
     fetchData();
@@ -51,7 +56,7 @@ const ProfilePage = ({ defaultTab }: ProfilePageProps) => {
           setTotalTokens(total);
         }
       } catch (error) {
-        console.error("Failed to fetch tokens:", error);
+        console.error(getErrorMessage(error));
       }
     };
 

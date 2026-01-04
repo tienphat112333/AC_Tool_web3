@@ -4,6 +4,7 @@ import { Input } from "../ui/input";
 import { Button } from "../ui/button";
 import { signIn, signUp } from "../../utils/auth";
 import { toast } from "react-toastify";
+import { getErrorMessage } from "../../utils/error";
 
 interface AuthModalProps {
   mode: "register" | "signin";
@@ -57,10 +58,10 @@ const AuthModal = ({
           handleClose();
         }
       } else {
-        setError(response.message || "Authentication failed");
+        toast.error(response.message || "Authentication failed");
       }
-    } catch {
-      setError("An error occurred. Please try again.");
+    } catch (error) {
+      toast.error(getErrorMessage(error));
     } finally {
       setIsLoading(false);
     }
