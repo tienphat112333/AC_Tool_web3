@@ -167,3 +167,58 @@ export const updateUserProfile = async (
     };
   }
 };
+
+export const requestLoginMessage = async (
+  walletAddress: string
+): Promise<ApiResponse<string>> => {
+  try {
+    const response = await api.post("/users/request", {
+      walletAddress,
+    });
+    return {
+      success: true,
+      message: "Message generated successfully",
+      data: response.data.data,
+    };
+  } catch (error) {
+    let errorMessage = "Request message fail!";
+    if (error instanceof AxiosError && error.response) {
+      errorMessage =
+        (error.response.data as { message: string }).message || errorMessage;
+    }
+    console.log('loi:',errorMessage);
+    return {
+      success: false,
+      message: errorMessage,
+    };
+  }
+};
+
+export const loginWithWallet = async (
+  walletAddress: string,
+  signature: string,
+  message: string
+): Promise<ApiResponse<string>> => {
+  try {
+    const response = await api.post("/users/login", {
+      walletAddress,
+      signature,
+      message,
+    });
+    return {
+      success: true,
+      message: response.data.message,
+      data: response.data.data,
+    };
+  } catch (error) {
+    let errorMessage = "Login fail!";
+    if (error instanceof AxiosError && error.response) {
+      errorMessage =
+        (error.response.data as { message: string }).message || errorMessage;
+    }
+    return {
+      success: false,
+      message: errorMessage,
+    };
+  }
+};

@@ -2,7 +2,8 @@ import { useState } from "react";
 import { Eye, EyeOff, X } from "lucide-react";
 import { Input } from "../ui/input";
 import { Button } from "../ui/button";
-import { signIn, signUp } from "../../utils/auth";
+import { signIn, signUp, requestLoginMessage, loginWithWallet } from "../../utils/auth";
+import { BrowserProvider } from "ethers";
 import { toast } from "react-toastify";
 import { getErrorMessage } from "../../utils/error";
 
@@ -62,6 +63,51 @@ const AuthModal = ({
       }
     } catch (error) {
       toast.error(getErrorMessage(error));
+    } finally {
+      setIsLoading(false);
+    }
+  };
+  // connect wallet 
+  const handleConnectWallet = async () => {
+    if (!(window as any).ethereum) {
+      toast.error("Please install MetaMask!");
+      return;
+    }
+    setIsLoading(true);
+    try {
+      const provider = new BrowserProvider((window as any).ethereum);
+      const signer = await provider.getSigner();
+      const address = await signer.getAddress();
+
+      // Request nonce
+      const msgRes = await requestLoginMessage(address);
+      if (!msgRes.success || !msgRes.data) {
+        toast.error(msgRes.message || "Failed to get message");
+        setIsLoading(false);
+        return;
+      }
+
+      // Sign message
+      const signature = await signer.signMessage(msgRes.data);
+
+      // Login
+      const loginRes = await loginWithWallet(address, signature, msgRes.data);
+      if (loginRes.success) {
+        const token = loginRes.data;
+        if (typeof token === "string") {
+          localStorage.setItem("accessToken", token);
+        }
+        localStorage.setItem("isAuthenticated", "true");
+        localStorage.setItem("walletAddress", address);
+        onSuccess();
+        toast(loginRes.message);
+        handleClose();
+      } else {
+        toast.error(loginRes.message || "Login failed");
+      }
+    } catch (error) {
+      console.error(error);
+      toast.error("Failed to connect wallet");
     } finally {
       setIsLoading(false);
     }
@@ -212,6 +258,25 @@ const AuthModal = ({
               : "Sign"}
           </Button>
         </form>
+
+        <div className="relative my-6">
+          <div className="absolute inset-0 flex items-center">
+            <span className="w-full border-t border-gray-300" />
+          </div>
+          <div className="relative flex justify-center text-sm">
+            <span className="px-2 bg-white text-gray-500">Or continue with</span>
+          </div>
+        </div>
+
+        <Button
+          type="button"
+          variant="outline"
+          onClick={handleConnectWallet}
+          className="w-full h-12 rounded-lg border-2 hover:bg-gray-50 mb-4"
+          disabled={isLoading}
+        >
+          Metamask
+        </Button>
 
         {/* Mode Switch Link */}
         <div className="mt-4 text-center">
