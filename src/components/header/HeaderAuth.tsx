@@ -10,6 +10,11 @@ interface HeaderAuthProps {
   title?: string;
 }
 
+const formatAddress = (address: string | undefined) => {
+  if (!address) return "";
+  return `${address.slice(0, 5)}...${address.slice(-9)}`;
+};
+
 const HeaderAuth = ({ title = "New Transaction" }: HeaderAuthProps) => {
   const [open, setOpen] = useState(false);
   const navigate = useNavigate();
@@ -54,7 +59,7 @@ const HeaderAuth = ({ title = "New Transaction" }: HeaderAuthProps) => {
           <img src={Avatar} alt="user avatar" />
           <div className="flex w-[135px] items-center justify-between gap-6 h-9">
             <div className="h-9 w-[95px] text-xs leading-[18px] text-left">
-              <h3 className="font-medium">{user?.walletAddress}</h3>
+              <h3 className="font-medium">{formatAddress(user?.walletAddress)}</h3>
               <p className="text-secondary-text">200 ZKN</p>
             </div>
             <img src={ArrowDown} alt="arrow down icon" />

@@ -22,6 +22,11 @@ interface ProfilePageProps {
   defaultTab: ProfileTab;
 }
 
+const formatAddress = (address: string | undefined) => {
+  if (!address) return "";
+  return `${address.slice(0, 5)}...${address.slice(-9)}`;
+};
+
 const ProfilePage = ({ defaultTab }: ProfilePageProps) => {
   const [activeTab, setActiveTab] = useState<ProfileTab>(defaultTab);
   const [profile, setProfile] = useState<UserProfile | null>(null);
@@ -89,7 +94,7 @@ const ProfilePage = ({ defaultTab }: ProfilePageProps) => {
                     {profile?.username || "no name yet"}
                   </p>
                   <p className="text-xs text-secondary-text">
-                    {profile?.walletAddress}
+                    {formatAddress(profile?.walletAddress)}
                   </p>
                 </div>
               </div>

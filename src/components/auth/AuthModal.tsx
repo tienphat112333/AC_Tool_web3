@@ -3,7 +3,7 @@ import { Eye, EyeOff, X } from "lucide-react";
 import { Input } from "../ui/input";
 import { Button } from "../ui/button";
 import { signIn, signUp, requestLoginMessage, loginWithWallet } from "../../utils/auth";
-import { BrowserProvider } from "ethers";
+import { useConnect, useSignMessage, useAccount } from "wagmi";
 import { toast } from "react-toastify";
 import { getErrorMessage } from "../../utils/error";
 
@@ -29,6 +29,9 @@ const AuthModal = ({
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const { connectAsync, connectors } = useConnect();
+  const { signMessageAsync } = useSignMessage();
+  const { address, isConnected } = useAccount();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -67,47 +70,44 @@ const AuthModal = ({
       setIsLoading(false);
     }
   };
-  // connect wallet 
+
   const handleConnectWallet = async () => {
-    if (!(window as any).ethereum) {
-      toast.error("Please install MetaMask!");
-      return;
-    }
     setIsLoading(true);
     try {
-      const provider = new BrowserProvider((window as any).ethereum);
-      const signer = await provider.getSigner();
-      const address = await signer.getAddress();
+      let userAddress = address;
+      if (!isConnected || !userAddress) {
+        const connector = connectors.find((c) => c.name === 'MetaMask') || connectors[0];
+        const result = await connectAsync({ connector });
+        userAddress = result.accounts[0];
+      }
 
-      // Request nonce
-      const msgRes = await requestLoginMessage(address);
+      if (!userAddress) throw new Error("No address found");
+
+      const msgRes = await requestLoginMessage(userAddress);
       if (!msgRes.success || !msgRes.data) {
         toast.error(msgRes.message || "Failed to get message");
         setIsLoading(false);
         return;
       }
 
-      // Sign message
-      const signature = await signer.signMessage(msgRes.data);
+      const signature = await signMessageAsync({ message: msgRes.data });
 
-      // Login
-      const loginRes = await loginWithWallet(address, signature, msgRes.data);
+      const loginRes = await loginWithWallet(userAddress, signature, msgRes.data);
       if (loginRes.success) {
         const token = loginRes.data;
         if (typeof token === "string") {
           localStorage.setItem("accessToken", token);
         }
         localStorage.setItem("isAuthenticated", "true");
-        localStorage.setItem("walletAddress", address);
+        localStorage.setItem("walletAddress", userAddress);
         onSuccess();
         toast(loginRes.message);
         handleClose();
       } else {
         toast.error(loginRes.message || "Login failed");
       }
-    } catch (error) {
-      console.error(error);
-      toast.error("Failed to connect wallet");
+    } catch (error: any) {
+      toast.error(error.message || "Failed to connect wallet");
     } finally {
       setIsLoading(false);
     }
@@ -134,7 +134,6 @@ const AuthModal = ({
         className="relative bg-white rounded-2xl w-full max-w-[500px] p-6 shadow-lg"
         onClick={(e) => e.stopPropagation()}
       >
-        {/* Close Button */}
         <button
           onClick={handleClose}
           className="absolute top-9 right-4 text-black "
@@ -143,21 +142,17 @@ const AuthModal = ({
           <X size={24} />
         </button>
 
-        {/* Title */}
         <h2 className="text-xl font-bold leading-[28px] text-center mb-6">
           {mode === "register" ? "Register" : "Sign In"}
         </h2>
 
-        {/* Error Message */}
         {error && (
           <div className="mb-4 p-3 bg-red-50 borde border-red-200 text-red-700 rounded-lg text-sm">
             {error}
           </div>
         )}
 
-        {/* Form */}
         <form onSubmit={handleSubmit} className="space-y-4">
-          {/* Wallet Address */}
           <div>
             <label
               htmlFor="wallet-address"
@@ -177,7 +172,6 @@ const AuthModal = ({
             />
           </div>
 
-          {/* Password */}
           <div>
             <label
               htmlFor="password"
@@ -207,7 +201,6 @@ const AuthModal = ({
             </div>
           </div>
 
-          {/* Confirm Password (Register mode only) */}
           {mode === "register" && (
             <div>
               <label
@@ -245,7 +238,6 @@ const AuthModal = ({
             </div>
           )}
 
-          {/* Submit Button */}
           <Button
             type="submit"
             className="w-full bg-primary hover:bg-primary-primary2 text-white h-12 rounded-lg"
@@ -278,7 +270,6 @@ const AuthModal = ({
           Metamask
         </Button>
 
-        {/* Mode Switch Link */}
         <div className="mt-4 text-center">
           <button
             type="button"
