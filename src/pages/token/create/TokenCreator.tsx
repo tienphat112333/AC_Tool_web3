@@ -9,11 +9,26 @@ import {
   createTokenSchema,
   CreateTokenFormValues,
 } from "../../../schemas/tokenSchema";
-import { createToken } from "../../../utils/token";
 import { toast } from "react-toastify";
-import { getErrorMessage } from "../../../utils/error";
+import { useRef } from "react";
+import {
+  useSendTransaction,
+  useAccount,
+  useSwitchChain,
+  usePublicClient,
+} from "wagmi";
+import { parseUnits, encodeAbiParameters, concat } from "viem";
+import { TOKEN_FACTORY_ADDRESS } from "../../../constants/constant";
+import { createToken } from "../../../utils/token";
 
 const TokenCreator = () => {
+  const { sendTransactionAsync } = useSendTransaction();
+  const { chainId } = useAccount();
+  const { switchChain } = useSwitchChain();
+  const client = usePublicClient();
+  const SEPOLIA_ID = 11155111;
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
   const {
     register,
     handleSubmit,
@@ -35,25 +50,77 @@ const TokenCreator = () => {
       xUrl: "",
     },
   });
-  const onSubmit = async (data: CreateTokenFormValues) => {
-    const formData = new FormData();
-    Object.entries(data).forEach(([key, value]) => {
-      if (value === undefined || value === null) return;
 
-      if (key === "image" && value instanceof FileList) {
-        if (value[0]) formData.append("image", value[0]);
-      } else {
-        formData.append(key, value.toString());
-      }
-    });
+  const onSubmit = async (data: CreateTokenFormValues) => {
+    if (data.amountPerMint > data.supply) {
+      toast.error("Amount per mint cannot exceed total supply!");
+      return;
+    }
+
     try {
+      toast.info("Creating token on Blockchain... Please approve transaction.");
+      const SELECTOR = "0x3f20ca13";
+      const encodedParams = encodeAbiParameters(
+        [
+          { type: 'string' },
+          { type: 'string' },
+          { type: 'uint256' },
+          { type: 'uint256' },
+          { type: 'uint256' },
+          { type: 'uint256' }
+        ],
+        [
+          data.name,
+          data.symbol,
+          parseUnits(data.amountPerMint.toString(), data.decimals),
+          parseUnits(data.supply.toString(), data.decimals),
+          BigInt(data.decimals),
+          BigInt(1)
+        ]
+      );
+
+      const calldata = concat([SELECTOR, encodedParams]);
+
+      const txHash = await sendTransactionAsync({
+        to: TOKEN_FACTORY_ADDRESS as `0x${string}`,
+        data: calldata,
+        value: BigInt(0),
+      });
+
+      toast.success("Transaction submitted! Waiting for confirmation...");
+
+      // Wait for the transaction to be mined
+      if (client) {
+        await client.waitForTransactionReceipt({ hash: txHash });
+        toast.info("Transaction confirmed! Saving details...");
+      } else {
+         // Fallback if client is missing (rare), just wait a bit manualy or proceed
+         await new Promise(resolve => setTimeout(resolve, 5000));
+      }
+
+      const formData = new FormData();
+      Object.entries(data).forEach(([key, value]) => {
+        if (value === undefined || value === null) return;
+
+        if (key === "image" && value instanceof FileList) {
+          if (value[0]) formData.append("image", value[0]);
+        } else {
+          formData.append(key, value.toString());
+        }
+      });
+      console.log("TxHash from Chain:", txHash);
+      formData.append("txHash", txHash);
+
       const submitData = await createToken(formData);
       if (submitData) {
         toast.success(submitData.message);
         reset();
+        if (fileInputRef.current) {
+            fileInputRef.current.value = "";
+        }
       }
-    } catch (error) {
-      toast.error(getErrorMessage(error));
+    } catch (error: any) {
+      toast.error(error.shortMessage || error.message || "Unknown error");
     }
   };
   const handleUploadImage = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -196,6 +263,7 @@ const TokenCreator = () => {
                           accept="image/png, image/jpeg"
                           className="hidden"
                           onChange={handleUploadImage}
+                          ref={fileInputRef}
                         />
                         {errors.image && (
                           <p className="text-sm font-medium text-secondary-text">
@@ -278,14 +346,24 @@ const TokenCreator = () => {
                   </div>
                 </div>
               </section>
-              <Button
-                type="submit"
-                className="w-full"
-                disabled={isSubmitting}
-                onClick={handleSubmit(onSubmit)}
-              >
-                {isSubmitting ? "Creating..." : "Create"}
-              </Button>
+              {chainId !== SEPOLIA_ID ? (
+                <Button
+                  type="button"
+                  className="w-full bg-red-500 hover:bg-red-600"
+                  onClick={() => switchChain({ chainId: SEPOLIA_ID })}
+                >
+                  Running on Wrong Network. Switch to Sepolia
+                </Button>
+              ) : (
+                <Button
+                  type="submit"
+                  className="w-full"
+                  disabled={isSubmitting}
+                  onClick={handleSubmit(onSubmit)}
+                >
+                  {isSubmitting ? "Creating..." : "Create"}
+                </Button>
+              )}
             </form>
           </section>
         </main>
