@@ -1,114 +1,224 @@
-export interface AuthResponse {
-  success: boolean
-  message?: string
-}
+import api from "./api";
+import { AxiosError } from "axios";
+import { UserProfile } from "../types/user";
+import { ApiResponse } from "../types/user";
 
-/**
- * Validates wallet address format
- * Must be exactly 10 characters
- */
 const isValidWalletAddress = (address: string): boolean => {
-  if (!address) return false
-  // Wallet address must be exactly 10 characters
-  return address.length === 10
-}
+  if (!address) return false;
+  return address.length === 10;
+};
 
-/**
- * Mock login function
- * Accepts wallet address (exactly 10 characters) and any non-empty password
- */
-export const mockLogin = (walletAddress: string, password: string): AuthResponse => {
-  // Basic validation
-  if (!isValidWalletAddress(walletAddress)) {
-    return {
-      success: false,
-      message: 'Invalid wallet address format. Must be exactly 10 characters.',
-    }
-  }
-
-  if (!password || password.length === 0) {
-    return {
-      success: false,
-      message: 'Password is required',
-    }
-  }
-
-  // Mock successful login
-  localStorage.setItem('isAuthenticated', 'true')
-  localStorage.setItem('walletAddress', walletAddress)
-
-  return {
-    success: true,
-    message: 'Login successful',
-  }
-}
-
-/**
- * Mock register function
- * Accepts wallet address (exactly 10 characters) and any non-empty password
- */
-export const mockRegister = (
+const validateAuthInputs = (
   walletAddress: string,
   password: string,
-  confirmPassword: string
-): AuthResponse => {
-  // Basic validation
+  isSignUp: boolean = false
+): string | null => {
   if (!isValidWalletAddress(walletAddress)) {
-    return {
-      success: false,
-      message: 'Invalid wallet address format. Must be exactly 10 characters.',
-    }
+    return "Invalid wallet address format. Must be exactly 10 characters.";
   }
-
   if (!password || password.length === 0) {
+    return "Password is required";
+  }
+  if (isSignUp && !walletAddress.startsWith("0")) {
+    return "Invalid wallet address format. Must be start with 0.";
+  }
+  if (isSignUp && password.length < 6) {
+    return "Password must be at least 6 characters";
+  }
+  return null;
+};
+
+export const signIn = async (
+  walletAddress: string,
+  password: string
+): Promise<ApiResponse<UserProfile>> => {
+  const errorAuthInput = validateAuthInputs(walletAddress, password, false);
+  if (errorAuthInput) {
     return {
       success: false,
-      message: 'Password is required',
-    }
+      message: errorAuthInput,
+    };
   }
 
-  if (password !== confirmPassword) {
+  try {
+    const response = await api.post("/users/sign-in", {
+      walletAddress,
+      password,
+    });
+    return {
+      success: true,
+      message: response.data.message,
+      data: response.data.data,
+    };
+  } catch (error) {
+    let errorMessage = "Sign-in fail!";
+    if (error instanceof AxiosError && error.response) {
+      errorMessage =
+        (error.response.data as { message: string }).message || errorMessage;
+    }
     return {
       success: false,
-      message: 'Passwords do not match',
-    }
+      message: errorMessage,
+    };
   }
+};
 
-  if (password.length < 6) {
+export const signUp = async (
+  walletAddress: string,
+  password: string
+): Promise<ApiResponse<UserProfile>> => {
+  const errorAuthInput = validateAuthInputs(walletAddress, password, true);
+  if (errorAuthInput) {
     return {
       success: false,
-      message: 'Password must be at least 6 characters',
+      message: errorAuthInput,
+    };
+  }
+  try {
+    const response = await api.post("/users/sign-up", {
+      walletAddress,
+      password,
+    });
+    return {
+      success: true,
+      data: response.data.data,
+      message: response.data.message,
+    };
+  } catch (error) {
+    let errorMessage = "Register fail!";
+    if (error instanceof AxiosError && error.response) {
+      errorMessage =
+        (error.response.data as { message: string }).message || errorMessage;
     }
+    return {
+      success: false,
+      message: errorMessage,
+    };
   }
+};
 
-  // Mock successful registration
-  localStorage.setItem('isAuthenticated', 'true')
-  localStorage.setItem('walletAddress', walletAddress)
-
-  return {
-    success: true,
-    message: 'Registration successful',
-  }
-}
-
-/**
- * Check if user is authenticated
- */
 export const isAuthenticated = (): boolean => {
-  return localStorage.getItem('isAuthenticated') === 'true'
-}
+  return !!localStorage.getItem("accessToken");
+};
 
-/**
- * Get current wallet address
- */
 export const getWalletAddress = (): string | null => {
-  return localStorage.getItem('walletAddress')
-}
+  return localStorage.getItem("walletAddress");
+};
 
-/**
- * Logout function
- */
 export const logout = (): void => {
-  localStorage.removeItem('isAuthenticated')
-  localStorage.removeItem('walletAddress')
-}
+  localStorage.removeItem("accessToken");
+  localStorage.removeItem("walletAddress");
+  localStorage.removeItem("isAuthenticated");
+};
+
+export const getUserProfile = async (): Promise<ApiResponse<UserProfile>> => {
+  try {
+    const token = localStorage.getItem("accessToken");
+    if (!token) throw new Error("No access Token");
+    const response = await api.get("/users/profile", {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    return {
+      success: true,
+      message: response.data.message,
+      data: response.data.data,
+    };
+  } catch (error) {
+    let errorMessage = "Get user fail!";
+    if (error instanceof AxiosError && error.response) {
+      errorMessage =
+        (error.response.data as { message: string }).message || errorMessage;
+    }
+    return {
+      success: false,
+      message: errorMessage,
+    };
+  }
+};
+
+export const updateUserProfile = async (
+  data: Partial<UserProfile>
+): Promise<ApiResponse<UserProfile>> => {
+  try {
+    const token = localStorage.getItem("accessToken");
+    if (!token) throw new Error("No access Token");
+
+    const response = await api.put("users/profile", data, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    return {
+      success: true,
+      data: response.data.data,
+      message: response.data.data,
+    };
+  } catch (error) {
+    let errorMessage = "Update profile fail:";
+    if (error instanceof AxiosError && error.response) {
+      errorMessage =
+        (error.response.data as { message: string }).message || errorMessage;
+    }
+    return {
+      success: false,
+      message: errorMessage,
+    };
+  }
+};
+
+export const requestLoginMessage = async (
+  walletAddress: string
+): Promise<ApiResponse<string>> => {
+  try {
+    const response = await api.post("/users/request", {
+      walletAddress,
+    });
+    return {
+      success: true,
+      message: "Message generated successfully",
+      data: response.data.data,
+    };
+  } catch (error) {
+    let errorMessage = "Request message fail!";
+    if (error instanceof AxiosError && error.response) {
+      errorMessage =
+        (error.response.data as { message: string }).message || errorMessage;
+    }
+    console.log('loi:',errorMessage);
+    return {
+      success: false,
+      message: errorMessage,
+    };
+  }
+};
+
+export const loginWithWallet = async (
+  walletAddress: string,
+  signature: string,
+  message: string
+): Promise<ApiResponse<string>> => {
+  try {
+    const response = await api.post("/users/login", {
+      walletAddress,
+      signature,
+      message,
+    });
+    return {
+      success: true,
+      message: response.data.message,
+      data: response.data.data,
+    };
+  } catch (error) {
+    let errorMessage = "Login fail!";
+    if (error instanceof AxiosError && error.response) {
+      errorMessage =
+        (error.response.data as { message: string }).message || errorMessage;
+    }
+    return {
+      success: false,
+      message: errorMessage,
+    };
+  }
+};

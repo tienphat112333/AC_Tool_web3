@@ -1,3 +1,4 @@
+import { CreateTokenFormValues } from '../../schemas/tokenSchema'
 import { Button } from '../ui/button'
 import { Icon } from '../ui/Icon'
 import { Input } from '../ui/input'
@@ -5,16 +6,16 @@ import { Input } from '../ui/input'
 type MintModalProps = {
   open: boolean
   onClose: () => void
-  tokenName: string | null
+  token: CreateTokenFormValues | null
 }
 
-export const MinModal = ({ open, onClose, tokenName }: MintModalProps) => {
-  if (!open) return null
+export const MinModal = ({ open, onClose, token }: MintModalProps) => {
+  if (!open || !token) return null
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
       <div className="flex h-[356px] w-[500px] flex-col gap-6 rounded-2xl bg-white p-6">
         <div className="relative w-full">
-          <h2 className="text-center text-xl font-bold">{tokenName} Tokens</h2>
+          <h2 className="text-center text-xl font-bold">{token.name} Tokens</h2>
           <button onClick={onClose} className="absolute right-0 top-0">
             <Icon name="close" variant={'fill'} className="h-6 w-6" viewBox="0 0 24 24" />
           </button>
@@ -22,7 +23,7 @@ export const MinModal = ({ open, onClose, tokenName }: MintModalProps) => {
         <div className="flex flex-col gap-6">
           <div className="flex flex-col gap-1">
             <p>Amount Per Mint</p>
-            <Input className="h-[52px] px-[10px] py-4" placeholder="10" />
+            <Input className="h-[52px] px-[10px] py-4" placeholder="10" value={token.amountPerMint || 0}/>
           </div>
           <div className="flex flex-col gap-1">
             <p>Mint Fee</p>

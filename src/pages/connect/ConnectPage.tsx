@@ -1,5 +1,8 @@
+import { useNavigate } from 'react-router-dom'
 import Bg1 from '../../assets/images/BG1.png'
 import { Button } from '../../components/ui/button'
+import { useEffect } from 'react'
+import { isAuthenticated } from '../../utils/auth'
 
 interface ConnectPageProps {
   onConnectClick: () => void
@@ -11,6 +14,12 @@ interface ConnectPageProps {
 }
 
 const ConnectPage = ({ onConnectClick }: ConnectPageProps) => {
+  const navigate = useNavigate()
+  useEffect(()=>{
+    if(isAuthenticated()){
+      navigate('/dashboard', {replace: true})
+    }
+  },[navigate])
   return (
     <main className="flex flex-col justify-center items-center px-2 relative">
       <div className="py-2">
@@ -20,7 +29,6 @@ const ConnectPage = ({ onConnectClick }: ConnectPageProps) => {
           className=" rounded-lg w-full h-[613px] relative"
         />
       </div>
-
       <div className="absolute w-[610px] h-[220px] top-[200px] flex flex-col justify-center items-center gap-8">
         <h1 className="font-medium text-[40px] leading-[48px]">Tokens & NFT with Ease</h1>
         <div className="text-2xl leading-[30px] w-[610px] flex flex-col justify-center items-center">

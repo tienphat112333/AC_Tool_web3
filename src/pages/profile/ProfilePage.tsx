@@ -1,45 +1,83 @@
-import { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
-import { Sidebar } from '../../components/sidebar'
-import { HeaderAuth } from '../../components/header'
-import { Button } from '../../components/ui/button'
-import { EditProfileModal, type ProfileData } from '../../components/profile'
-import { Icon } from '../../components/ui/Icon'
-import Avata from '../../assets/images/Avatar.png'
-import { MOCK_TOKENS, MOCK_NFTS } from '../../constants/constant'
-
-type ProfileTab = 'tokens' | 'nfts'
+import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { Sidebar } from "../../components/sidebar";
+import { HeaderAuth } from "../../components/header";
+import { Button } from "../../components/ui/button";
+import { EditProfileModal } from "../../components/profile";
+import { Icon } from "../../components/ui/Icon";
+import Avata from "../../assets/images/Avatar.png";
+import {
+  MOCK_NFTS,
+  LIMIT_ITEMS_IN_PAGE,
+  BACKEND_URL,
+} from "../../constants/constant";
+import { UserProfile } from "../../types/user";
+import { getUserProfile } from "../../utils/auth";
+import { getTokens } from "../../utils/token";
+import { CreateTokenFormValues } from "../../schemas/tokenSchema";
+import { getErrorMessage } from "../../utils/error";
+type ProfileTab = "tokens" | "nfts";
 
 interface ProfilePageProps {
-  defaultTab: ProfileTab
-}
-
-const mockProfile: ProfileData = {
-  name: 'John',
-  biography: '',
+  defaultTab: ProfileTab;
 }
 
 const ProfilePage = ({ defaultTab }: ProfilePageProps) => {
-  const [activeTab, setActiveTab] = useState<ProfileTab>(defaultTab)
-  const [profile, setProfile] = useState<ProfileData>(mockProfile)
-  const [isEditOpen, setIsEditOpen] = useState(false)
-  const navigate = useNavigate()
+  const [activeTab, setActiveTab] = useState<ProfileTab>(defaultTab);
+  const [profile, setProfile] = useState<UserProfile | null>(null);
+  const [isEditOpen, setIsEditOpen] = useState(false);
+  const [tokens, setTokens] = useState<[CreateTokenFormValues]>();
+  const [totalTokens, setTotalTokens] = useState(0);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(0);
+  const navigate = useNavigate();
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const userData = await getUserProfile();
+        if (userData.success && userData.data) {
+          setProfile(userData.data);
+        }
+      } catch (error) {
+        console.error(error);
+      }
+    };
+    fetchData();
+  }, []);
+  useEffect(() => {
+    const fetchTokens = async () => {
+      try {
+        const response = await getTokens(currentPage, LIMIT_ITEMS_IN_PAGE);
 
+        if (response && response.data) {
+          setTokens(response.data);
+          const total = response.pagination?.total || 0;
+          setTotalPages(Math.ceil(total / LIMIT_ITEMS_IN_PAGE));
+          setTotalTokens(total);
+        }
+      } catch (error) {
+        console.error(getErrorMessage(error));
+      }
+    };
+
+    fetchTokens();
+  }, [currentPage]);
   const handleTabChange = (tab: ProfileTab) => {
-    setActiveTab(tab)
-    navigate(tab === 'tokens' ? '/profile/tokens' : '/profile/nfts', { replace: true })
-  }
+    setActiveTab(tab);
+    navigate(tab === "tokens" ? "/profile/tokens" : "/profile/nfts", {
+      replace: true,
+    });
+  };
 
-  const handleSaveProfile = (data: ProfileData) => {
-    setProfile(data)
-  }
+  const handleSaveProfile = (data: UserProfile) => {
+    setProfile(data);
+  };
 
   return (
     <div className="flex min-h-screen bg-gray-100">
       <Sidebar />
       <div className="flex flex-1 flex-col">
         <HeaderAuth title="Profile" />
-
         <main className="flex-1 bg-background2 p-3">
           <div className="flex flex-row items-start gap-4">
             {/* Left profile card */}
@@ -47,26 +85,44 @@ const ProfilePage = ({ defaultTab }: ProfilePageProps) => {
               <div className="flex items-center gap-3">
                 <img src={Avata} alt="avata user" className="h-10 w-10" />
                 <div className="text-sm">
-                  <p className="text-[16px] font-semibold">{profile.name}</p>
-                  <p className="text-xs text-secondary-text">0x4aq...gfr6j5lda</p>
+                  <p className="text-[16px] font-semibold">
+                    {profile?.username || "no name yet"}
+                  </p>
+                  <p className="text-xs text-secondary-text">
+                    {profile?.walletAddress}
+                  </p>
                 </div>
               </div>
 
               <div className="flex flex-col gap-4 text-sm">
                 <div>
-                  <p className="mb-2 text-lg font-medium leading-[24px]">Balance</p>
+                  <p className="mb-2 text-lg font-medium leading-[24px]">
+                    Balance
+                  </p>
                   <p className="text-sm text-secondary-text">200 ZKN</p>
                 </div>
                 <div>
-                  <p className="mb-2 text-lg font-medium leading-[24px]">Biography</p>
-                  <p className="text-sm text-secondary-text">{profile.biography || 'None'}</p>
+                  <p className="mb-2 text-lg font-medium leading-[24px]">
+                    Biography
+                  </p>
+                  <p className="text-sm text-secondary-text">
+                    {profile?.bio || "None"}
+                  </p>
                 </div>
                 <div>
-                  <p className="mb-2 text-lg font-medium leading-[24px]">Social Links</p>
+                  <p className="mb-2 text-lg font-medium leading-[24px]">
+                    Social Links
+                  </p>
                   <div className="mt-1 flex gap-2 text-xs text-secondary-text">
-                    <Icon name="Twitter" variant={'fill'} />
-                    <Icon name="github" variant={'fill'} />
-                    <Icon name="Tele" variant={'fill'} />
+                    <a href={profile?.xUrl} target="_blank">
+                      <Icon name="Twitter" variant={"fill"} />
+                    </a>
+                    <a href={profile?.xUrl} target="_blank">
+                      <Icon name="github" variant={"fill"} />
+                    </a>
+                    <a href={profile?.xUrl} target="_blank">
+                      <Icon name="Tele" variant={"fill"} />
+                    </a>
                   </div>
                 </div>
               </div>
@@ -83,11 +139,17 @@ const ProfilePage = ({ defaultTab }: ProfilePageProps) => {
             <section className="flex flex-1 flex-col gap-2">
               <div className="flex gap-2">
                 <div className="flex-1 rounded-lg bg-white p-4 px-6 py-4 shadow-sm">
-                  <p className="text-base leading-[20px] text-secondary-text">Total Tokens</p>
-                  <p className="mt-2 text-2xl font-medium leading-[24px]">0</p>
+                  <p className="text-base leading-[20px] text-secondary-text">
+                    Total Tokens
+                  </p>
+                  <p className="mt-2 text-2xl font-medium leading-[24px]">
+                    {totalTokens}
+                  </p>
                 </div>
                 <div className="flex-1 rounded-lg bg-white p-4 px-6 py-4 shadow-sm">
-                  <p className="text-base leading-[20px] text-secondary-text">Total NFTs</p>
+                  <p className="text-base leading-[20px] text-secondary-text">
+                    Total NFTs
+                  </p>
                   <p className="mt-2 text-2xl font-semibold">0</p>
                 </div>
               </div>
@@ -97,24 +159,28 @@ const ProfilePage = ({ defaultTab }: ProfilePageProps) => {
                   <div className="flex gap-2 rounded-[999px] bg-[#F5F5F5] p-1 text-sm">
                     <button
                       className={`rounded-[999px] px-4 py-1 ${
-                        activeTab === 'tokens' ? 'bg-white font-medium shadow-sm' : 'text-gray-500'
+                        activeTab === "tokens"
+                          ? "bg-white font-medium shadow-sm"
+                          : "text-gray-500"
                       }`}
-                      onClick={() => handleTabChange('tokens')}
+                      onClick={() => handleTabChange("tokens")}
                     >
                       Tokens
                     </button>
                     <button
                       className={`rounded-[999px] px-4 py-1 ${
-                        activeTab === 'nfts' ? 'bg-white font-medium shadow-sm' : 'text-gray-500'
+                        activeTab === "nfts"
+                          ? "bg-white font-medium shadow-sm"
+                          : "text-gray-500"
                       }`}
-                      onClick={() => handleTabChange('nfts')}
+                      onClick={() => handleTabChange("nfts")}
                     >
                       NFTs
                     </button>
                   </div>
                 </div>
 
-                {activeTab === 'tokens' ? (
+                {activeTab === "tokens" ? (
                   <div className="overflow-hidden">
                     <div className="divide-y divide-colorDivide">
                       <div className="grid grid-cols-[1.5fr,1.5fr,1.2fr,1.1fr] py-3 text-base font-medium leading-[20px] text-secondary-text">
@@ -123,36 +189,70 @@ const ProfilePage = ({ defaultTab }: ProfilePageProps) => {
                         <span className="text-right">% of Supply</span>
                         <span className="text-right">Total of Supply</span>
                       </div>
-                      {MOCK_TOKENS.map((token) => (
+                      {tokens?.map((token) => (
                         <div
-                          key={token.id}
+                          key={token.name}
                           className="grid grid-cols-[1.5fr,1fr,1fr,1fr] items-center py-3 text-base font-medium"
                         >
                           <div className="flex items-center gap-3">
                             <img
-                              src={token.avatar}
+                              src={
+                                token.image
+                                  ? `${BACKEND_URL}${token.image}`
+                                  : "loi hinh anh"
+                              }
                               alt="user avatar"
                               className="flex h-12 w-12 items-center justify-center rounded-full"
                             />
 
                             <div className="flex flex-col">
                               <div className="flex items-center gap-2 text-base font-medium">
-                                <span className="leading-[24px]">{token.name}</span>
+                                <span className="leading-[24px]">
+                                  {token.name}
+                                </span>
                                 <span className="leading-[16px] text-secondary-text">
                                   {token.symbol}
                                 </span>
                               </div>
                               <div className="flex items-center gap-2 text-xs">
-                                <span className="font-medium text-black">{token.address}</span>
-                                <Icon name="copy" className="h-3 w-3 text-secondary-text" />
+                                <span className="font-medium text-black">
+                                  {token.description}
+                                </span>
+                                <Icon
+                                  name="copy"
+                                  className="h-3 w-3 text-secondary-text"
+                                />
                               </div>
                             </div>
                           </div>
-                          <div className="text-right">{token.balance}</div>
-                          <div className="text-right">{token.percent}</div>
-                          <div className="text-right">{token.total}</div>
+                          <div className="text-right">{token.decimals}</div>
+                          <div className="text-right">{token.supply}</div>
+                          <div className="text-right">{token.decimals}</div>
                         </div>
                       ))}
+                    </div>
+                    <div className="mt-4 flex items-center justify-center gap-4 pb-4">
+                      <Button
+                        variant="secondary"
+                        disabled={currentPage === 1} // Trang 1 thì chặn nút Back
+                        onClick={() =>
+                          setCurrentPage((prev) => Math.max(prev - 1, 1))
+                        }
+                      >
+                        Previous
+                      </Button>
+
+                      <span className="text-sm font-medium text-secondary-text">
+                        Page {currentPage} of {totalPages || 1}
+                      </span>
+
+                      <Button
+                        variant="secondary"
+                        disabled={currentPage >= totalPages} // Trang cuối thì chặn nút Next
+                        onClick={() => setCurrentPage((prev) => prev + 1)}
+                      >
+                        Next
+                      </Button>
                     </div>
                   </div>
                 ) : (
@@ -178,8 +278,13 @@ const ProfilePage = ({ defaultTab }: ProfilePageProps) => {
                               <span className="font-medium">{nft.name}</span>
 
                               <div className="flex items-center gap-2 text-xs">
-                                <span className="text-xs text-gray-500">{nft.address}</span>
-                                <Icon name="copy" className="h-3 w-3 text-secondary-text" />
+                                <span className="text-xs text-gray-500">
+                                  {nft.address}
+                                </span>
+                                <Icon
+                                  name="copy"
+                                  className="h-3 w-3 text-secondary-text"
+                                />
                               </div>
                             </div>
                           </div>
@@ -203,7 +308,7 @@ const ProfilePage = ({ defaultTab }: ProfilePageProps) => {
         onSave={handleSaveProfile}
       />
     </div>
-  )
-}
+  );
+};
 
-export default ProfilePage
+export default ProfilePage;
