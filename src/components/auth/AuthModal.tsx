@@ -2,7 +2,12 @@ import { useState } from "react";
 import { Eye, EyeOff, X } from "lucide-react";
 import { Input } from "../ui/input";
 import { Button } from "../ui/button";
-import { signIn, signUp, requestLoginMessage, loginWithWallet } from "../../utils/auth";
+import {
+  signIn,
+  signUp,
+  requestLoginMessage,
+  loginWithWallet,
+} from "../../utils/auth";
 import { useConnect, useSignMessage, useAccount } from "wagmi";
 import { toast } from "react-toastify";
 import { getErrorMessage } from "../../utils/error";
@@ -76,7 +81,8 @@ const AuthModal = ({
     try {
       let userAddress = address;
       if (!isConnected || !userAddress) {
-        const connector = connectors.find((c) => c.name === 'MetaMask') || connectors[0];
+        const connector =
+          connectors.find((c) => c.name === "MetaMask") || connectors[0];
         const result = await connectAsync({ connector });
         userAddress = result.accounts[0];
       }
@@ -92,7 +98,11 @@ const AuthModal = ({
 
       const signature = await signMessageAsync({ message: msgRes.data });
 
-      const loginRes = await loginWithWallet(userAddress, signature, msgRes.data);
+      const loginRes = await loginWithWallet(
+        userAddress,
+        signature,
+        msgRes.data,
+      );
       if (loginRes.success) {
         const token = loginRes.data;
         if (typeof token === "string") {
@@ -106,8 +116,9 @@ const AuthModal = ({
       } else {
         toast.error(loginRes.message || "Login failed");
       }
-    } catch (error: any) {
-      toast.error(error.message || "Failed to connect wallet");
+    } catch (error) {
+      // toast.error(error.message || "Failed to connect wallet");
+      toast.error(getErrorMessage(error));
     } finally {
       setIsLoading(false);
     }
@@ -246,8 +257,8 @@ const AuthModal = ({
             {isLoading
               ? "Processing..."
               : mode === "register"
-              ? "Register"
-              : "Sign"}
+                ? "Register"
+                : "Sign"}
           </Button>
         </form>
 
@@ -256,7 +267,9 @@ const AuthModal = ({
             <span className="w-full border-t border-gray-300" />
           </div>
           <div className="relative flex justify-center text-sm">
-            <span className="px-2 bg-white text-gray-500">Or continue with</span>
+            <span className="px-2 bg-white text-gray-500">
+              Or continue with
+            </span>
           </div>
         </div>
 
