@@ -11,7 +11,6 @@ import {
   LIMIT_ITEMS_IN_PAGE,
   BACKEND_URL,
 } from "../../constants/constant";
-import { UserProfile } from "../../types/user";
 import { useAuth } from "../../contexts/AuthContext";
 import { getTokens } from "../../utils/token";
 import { CreateTokenFormValues } from "../../schemas/tokenSchema";
