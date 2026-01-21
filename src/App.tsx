@@ -6,18 +6,22 @@ import { HeaderGuest } from "./components/header";
 import { ConnectPage } from "./pages/connect";
 import { DashboardPage } from "./pages/dashboard";
 import { ProfilePage } from "./pages/profile";
-import { isAuthenticated } from "./utils/auth";
 import { AuthModal } from "./components/auth";
 import { TokenCreator } from "./pages/token/create";
 import { TokenList } from "./pages/token/list";
 import { ToastContainer } from "react-toastify";
+import { AuthProvider, useAuth } from "./contexts/AuthContext";
+
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
-  return isAuthenticated() ? <>{children}</> : <Navigate to="/" replace />;
+  const { isAuthenticated, isLoading } = useAuth();
+  if (isLoading) return <div>Loading...</div>; // Or a proper spinner
+  return isAuthenticated ? <>{children}</> : <Navigate to="/" replace />;
 };
 
 const ConnectPageWithLayout = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [modalMode, setModalMode] = useState<"register" | "signin">("signin");
+  const { login } = useAuth();
   const navigate = useNavigate();
 
   const handleConnectClick = () => {
@@ -34,6 +38,7 @@ const ConnectPageWithLayout = () => {
   };
 
   const handleAuthSuccess = () => {
+    login();
     navigate("/dashboard", { replace: true });
   };
 
@@ -63,63 +68,65 @@ const ConnectPageWithLayout = () => {
 const App = () => {
   return (
     <BrowserRouter>
-      <ToastContainer
-        position="top-right"
-        autoClose={3000}
-        hideProgressBar={false}
-        newestOnTop={false}
-        closeOnClick
-        rtl={false}
-        pauseOnFocusLoss
-        draggable
-        pauseOnHover
-        theme="light"
-      />
-
-      <Routes>
-        <Route path="/" element={<ConnectPageWithLayout />} />
-        <Route
-          path="/token/creator"
-          element={
-            <ProtectedRoute>
-              <TokenCreator />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/token/list"
-          element={
-            <ProtectedRoute>
-              <TokenList />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/dashboard"
-          element={
-            <ProtectedRoute>
-              <DashboardPage />
-            </ProtectedRoute>
-          }
+      <AuthProvider>
+        <ToastContainer
+          position="top-right"
+          autoClose={3000}
+          hideProgressBar={false}
+          newestOnTop={false}
+          closeOnClick
+          rtl={false}
+          pauseOnFocusLoss
+          draggable
+          pauseOnHover
+          theme="light"
         />
 
-        <Route
-          path="/profile/tokens"
-          element={
-            <ProtectedRoute>
-              <ProfilePage defaultTab="tokens" />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/profile/nfts"
-          element={
-            <ProtectedRoute>
-              <ProfilePage defaultTab="nfts" />
-            </ProtectedRoute>
-          }
-        />
-      </Routes>
+        <Routes>
+          <Route path="/" element={<ConnectPageWithLayout />} />
+          <Route
+            path="/token/creator"
+            element={
+              <ProtectedRoute>
+                <TokenCreator />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/token/list"
+            element={
+              <ProtectedRoute>
+                <TokenList />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/dashboard"
+            element={
+              <ProtectedRoute>
+                <DashboardPage />
+              </ProtectedRoute>
+            }
+          />
+
+          <Route
+            path="/profile/tokens"
+            element={
+              <ProtectedRoute>
+                <ProfilePage defaultTab="tokens" />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/profile/nfts"
+            element={
+              <ProtectedRoute>
+                <ProfilePage defaultTab="nfts" />
+              </ProtectedRoute>
+            }
+          />
+        </Routes>
+      </AuthProvider>
     </BrowserRouter>
   );
 };

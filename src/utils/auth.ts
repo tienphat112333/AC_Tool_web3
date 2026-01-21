@@ -186,7 +186,7 @@ export const requestLoginMessage = async (
       errorMessage =
         (error.response.data as { message: string }).message || errorMessage;
     }
-    console.log('loi:',errorMessage);
+
     return {
       success: false,
       message: errorMessage,

@@ -12,7 +12,7 @@ import {
   BACKEND_URL,
 } from "../../constants/constant";
 import { UserProfile } from "../../types/user";
-import { getUserProfile } from "../../utils/auth";
+import { useAuth } from "../../contexts/AuthContext";
 import { getTokens } from "../../utils/token";
 import { CreateTokenFormValues } from "../../schemas/tokenSchema";
 import { getErrorMessage } from "../../utils/error";
@@ -29,26 +29,14 @@ const formatAddress = (address: string | undefined) => {
 
 const ProfilePage = ({ defaultTab }: ProfilePageProps) => {
   const [activeTab, setActiveTab] = useState<ProfileTab>(defaultTab);
-  const [profile, setProfile] = useState<UserProfile | null>(null);
+  const { user: profile, refreshProfile } = useAuth();
   const [isEditOpen, setIsEditOpen] = useState(false);
   const [tokens, setTokens] = useState<[CreateTokenFormValues]>();
   const [totalTokens, setTotalTokens] = useState(0);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(0);
   const navigate = useNavigate();
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const userData = await getUserProfile();
-        if (userData.success && userData.data) {
-          setProfile(userData.data);
-        }
-      } catch (error) {
-        console.error(error);
-      }
-    };
-    fetchData();
-  }, []);
+
   useEffect(() => {
     const fetchTokens = async () => {
       try {
@@ -74,8 +62,8 @@ const ProfilePage = ({ defaultTab }: ProfilePageProps) => {
     });
   };
 
-  const handleSaveProfile = (data: UserProfile) => {
-    setProfile(data);
+  const handleSaveProfile = async (data: UserProfile) => {
+    await refreshProfile();
   };
 
   return (

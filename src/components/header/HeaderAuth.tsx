@@ -1,10 +1,9 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Avatar from "../../assets/images/Avatar.png";
 import ArrowDown from "../../assets/icons/arrow-down.svg";
-import { getUserProfile, logout } from "../../utils/auth";
 import { Icon } from "../ui/Icon";
-import { UserProfile } from "../../types/user";
+import { useAuth } from "../../contexts/AuthContext";
 
 interface HeaderAuthProps {
   title?: string;
@@ -18,20 +17,8 @@ const formatAddress = (address: string | undefined) => {
 const HeaderAuth = ({ title = "New Transaction" }: HeaderAuthProps) => {
   const [open, setOpen] = useState(false);
   const navigate = useNavigate();
-  const [user, setUser] = useState<UserProfile | null>(null);
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const userData = await getUserProfile();
-        if (userData.success && userData.data) {
-          setUser(userData.data);
-        }
-      } catch (error) {
-        console.error(error);
-      }
-    };
-    fetchData();
-  }, []);
+  const { user, logout } = useAuth();
+  
   const handleToggle = () => {
     setOpen((prev) => !prev);
   };

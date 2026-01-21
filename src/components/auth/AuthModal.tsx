@@ -117,7 +117,6 @@ const AuthModal = ({
         toast.error(loginRes.message || "Login failed");
       }
     } catch (error) {
-      // toast.error(error.message || "Failed to connect wallet");
       toast.error(getErrorMessage(error));
     } finally {
       setIsLoading(false);

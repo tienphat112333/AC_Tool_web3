@@ -10,7 +10,7 @@ import {
   CreateTokenFormValues,
 } from "../../../schemas/tokenSchema";
 import { toast } from "react-toastify";
-import { useRef } from "react";
+import { useRef, useState } from "react";
 import {
   useSendTransaction,
   useAccount,
@@ -28,6 +28,7 @@ const TokenCreator = () => {
   const client = usePublicClient();
   const SEPOLIA_ID = 11155111;
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const [imagePreview, setImagePreview] = useState<string | null>(null);
 
   const {
     register,
@@ -86,15 +87,11 @@ const TokenCreator = () => {
         data: calldata,
         value: BigInt(0),
       });
-
       toast.success("Transaction submitted! Waiting for confirmation...");
-
-      // Wait for the transaction to be mined
       if (client) {
         await client.waitForTransactionReceipt({ hash: txHash });
         toast.info("Transaction confirmed! Saving details...");
       } else {
-         // Fallback if client is missing (rare), just wait a bit manualy or proceed
          await new Promise(resolve => setTimeout(resolve, 5000));
       }
 
@@ -108,13 +105,14 @@ const TokenCreator = () => {
           formData.append(key, value.toString());
         }
       });
-      console.log("TxHash from Chain:", txHash);
+
       formData.append("txHash", txHash);
 
       const submitData = await createToken(formData);
       if (submitData) {
         toast.success(submitData.message);
         reset();
+        setImagePreview(null);
         if (fileInputRef.current) {
             fileInputRef.current.value = "";
         }
@@ -125,7 +123,10 @@ const TokenCreator = () => {
   };
   const handleUploadImage = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files.length > 0) {
+      const file = e.target.files[0];
       setValue("image", e.target.files);
+      const objectUrl = URL.createObjectURL(file);
+      setImagePreview(objectUrl);
     }
   };
   return (
@@ -246,17 +247,27 @@ const TokenCreator = () => {
                       className="flex h-[120px] cursor-pointer flex-col items-center justify-center rounded-lg border-[1.5px] border-dashed border-secondary-subText px-4 py-6 text-secondary-subText"
                     >
                       <div className="flex w-[200px] flex-col items-center justify-center">
-                        <Icon
-                          name="Logout"
-                          variant={"fill"}
-                          className="h-6 w-6"
-                        />
-                        <p className="text-sm font-medium text-secondary-text">
-                          Drag and drop here to upload
-                        </p>
-                        <p className="text-xs text-[#616161]">
-                          png, .jpg, 1000x1000px
-                        </p>
+                        {imagePreview ? (
+                            <img 
+                                src={imagePreview} 
+                                alt="Preview" 
+                                className="h-[100px] w-auto object-contain" 
+                            />
+                        ) : (
+                            <>
+                                <Icon
+                                  name="Logout"
+                                  variant={"fill"}
+                                  className="h-6 w-6"
+                                />
+                                <p className="text-sm font-medium text-secondary-text">
+                                  Drag and drop here to upload
+                                </p>
+                                <p className="text-xs text-[#616161]">
+                                  png, .jpg, 1000x1000px
+                                </p>
+                            </>
+                        )}
                         <input
                           type="file"
                           id="image-upload"
@@ -300,49 +311,77 @@ const TokenCreator = () => {
                   </p>
                 </div>
                 <div className="flex w-full flex-col gap-2">
-                  <div className="flex items-center justify-center gap-4">
-                    <span className="min-w-[72px] text-base font-medium">
-                      Website:
-                    </span>
-                    <Input
-                      icon={<Icon name="web" />}
-                      placeholder="https://"
-                      className="h-[42px]"
-                      {...register("websiteUrl")}
-                    />
+                  <div className="flex flex-col gap-1">
+                    <div className="flex items-center justify-center gap-4">
+                      <span className="min-w-[72px] text-base font-medium">
+                        Website:
+                      </span>
+                      <Input
+                        icon={<Icon name="web" />}
+                        placeholder="https://"
+                        className="h-[42px]"
+                        {...register("websiteUrl")}
+                      />
+                    </div>
+                    {errors.websiteUrl && (
+                      <p className="ml-[88px] text-xs text-secondaryRed">
+                        {errors.websiteUrl.message}
+                      </p>
+                    )}
                   </div>
-                  <div className="flex items-center justify-center gap-4">
-                    <span className="min-w-[72px] text-base font-medium">
-                      Telegram:
-                    </span>
-                    <Input
-                      icon={<Icon name="telegram" variant={"fill"} />}
-                      placeholder="https://t.me/"
-                      className="h-[42px]"
-                      {...register("telegramUrl")}
-                    />
+                  <div className="flex flex-col gap-1">
+                    <div className="flex items-center justify-center gap-4">
+                      <span className="min-w-[72px] text-base font-medium">
+                        Telegram:
+                      </span>
+                      <Input
+                        icon={<Icon name="telegram" variant={"fill"} />}
+                        placeholder="https://t.me/"
+                        className="h-[42px]"
+                        {...register("telegramUrl")}
+                      />
+                    </div>
+                    {errors.telegramUrl && (
+                      <p className="ml-[88px] text-xs text-secondaryRed">
+                        {errors.telegramUrl.message}
+                      </p>
+                    )}
                   </div>
-                  <div className="flex items-center justify-center gap-4">
-                    <span className="min-w-[72px] text-base font-medium">
-                      Discord:
-                    </span>
-                    <Input
-                      icon={<Icon name="discord" />}
-                      placeholder="https://"
-                      className="h-[42px]"
-                      {...register("discordUrl")}
-                    />
+                  <div className="flex flex-col gap-1">
+                    <div className="flex items-center justify-center gap-4">
+                      <span className="min-w-[72px] text-base font-medium">
+                        Discord:
+                      </span>
+                      <Input
+                        icon={<Icon name="discord" />}
+                        placeholder="https://"
+                        className="h-[42px]"
+                        {...register("discordUrl")}
+                      />
+                    </div>
+                    {errors.discordUrl && (
+                      <p className="ml-[88px] text-xs text-secondaryRed">
+                        {errors.discordUrl.message}
+                      </p>
+                    )}
                   </div>
-                  <div className="flex items-center justify-center gap-4">
-                    <span className="min-w-[72px] text-base font-medium">
-                      Twitter:
-                    </span>
-                    <Input
-                      icon={<Icon name="web" />}
-                      placeholder="https://"
-                      className="h-[42px]"
-                      {...register("telegramUrl")}
-                    />
+                  <div className="flex flex-col gap-1">
+                    <div className="flex items-center justify-center gap-4">
+                      <span className="min-w-[72px] text-base font-medium">
+                        Twitter:
+                      </span>
+                      <Input
+                        icon={<Icon name="web" />}
+                        placeholder="https://"
+                        className="h-[42px]"
+                        {...register("xUrl")}
+                      />
+                    </div>
+                    {errors.xUrl && (
+                      <p className="ml-[88px] text-xs text-secondaryRed">
+                        {errors.xUrl.message}
+                      </p>
+                    )}
                   </div>
                 </div>
               </section>
