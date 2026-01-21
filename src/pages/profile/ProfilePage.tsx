@@ -62,7 +62,7 @@ const ProfilePage = ({ defaultTab }: ProfilePageProps) => {
     });
   };
 
-  const handleSaveProfile = async (data: UserProfile) => {
+  const handleSaveProfile = async () => {
     await refreshProfile();
   };
 

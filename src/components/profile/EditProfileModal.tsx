@@ -11,7 +11,7 @@ interface EditProfileModalProps {
   isOpen: boolean;
   onClose: () => void;
   initialData: UserProfile | null;
-  onSave: (data: UserProfile) => void;
+  onSave: () => void;
 }
 
 const EditProfileModal = ({
@@ -48,7 +48,7 @@ const EditProfileModal = ({
         githubUrl: discord,
       });
       if (newProfile.success && newProfile.data) {
-        onSave(newProfile.data);
+        onSave();
         toast.success(newProfile.message);
         onClose();
       }
