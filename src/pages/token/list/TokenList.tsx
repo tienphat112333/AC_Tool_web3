@@ -61,7 +61,9 @@ const TokenList = () => {
                   <img
                     src={
                       token.image
-                        ? `${BACKEND_URL}${token.image}`
+                        ? token.image.startsWith("http")
+                          ? token.image
+                          : `${BACKEND_URL}${token.image}`
                         : "loi hinh anh"
                     }
                     alt="user avatar"
