@@ -118,5 +118,6 @@ export const SIDEBAR_ITEMS = [
 
 
 export const LIMIT_ITEMS_IN_PAGE = 1;
-export const BACKEND_URL = import.meta.env.VITE_API_URL || "http://localhost:5035";
+const apiUrl = import.meta.env.VITE_API_URL || "http://localhost:5035/v1";
+export const BACKEND_URL = apiUrl.replace(/\/v1\/?$/, "");
 export const TOKEN_FACTORY_ADDRESS = import.meta.env.VITE_TOKEN_FACTORY_ADDRESS as string;
