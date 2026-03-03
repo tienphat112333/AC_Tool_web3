@@ -21,29 +21,30 @@ const ConnectPage = ({ onConnectClick }: ConnectPageProps) => {
     }
   },[navigate])
   return (
-    <main className="flex flex-col justify-center items-center px-2 relative">
-      <div className="py-2">
+    <main className="flex flex-1 h-full justify-center items-center px-0 sm:px-2 py-6">
+      <section className="relative w-full">
         <img
           src={Bg1}
           alt="background color with mountain and river"
-          className=" rounded-lg w-full h-[613px] relative"
+          className="w-full h-auto max-h-[613px] rounded-lg object-cover"
         />
-      </div>
-      <div className="absolute w-[610px] h-[220px] top-[200px] flex flex-col justify-center items-center gap-8">
-        <h1 className="font-medium text-[40px] leading-[48px]">Tokens & NFT with Ease</h1>
-        <div className="text-2xl leading-[30px] w-[610px] flex flex-col justify-center items-center">
-          <p>Launch Token, Liquidity, Airdrops and much more.</p>
-          <p>Effortless and without coding.</p>
+        <div className="absolute inset-0 flex flex-col items-center justify-center gap-6 px-4 text-center">
+          <h1 className="font-medium text-3xl sm:text-4xl leading-tight">
+            Tokens & NFT with Ease
+          </h1>
+          <div className="text-lg sm:text-2xl leading-snug max-w-xl">
+            <p>Launch Token, Liquidity, Airdrops and much more.</p>
+            <p>Effortless and without coding.</p>
+          </div>
+          <Button
+            size={'sm'}
+            className="w-full sm:w-[216px] h-12 sm:h-14 bg-white text-primary hover:text-white"
+            onClick={onConnectClick}
+          >
+            Connect Your Wallet
+          </Button>
         </div>
-
-        <Button
-          size={'sm'}
-          className="w-[216px] h-14 bg-white text-primary hover:text-white"
-          onClick={onConnectClick}
-        >
-          Connect Your Wallet
-        </Button>
-      </div>
+      </section>
     </main>
   )
 }

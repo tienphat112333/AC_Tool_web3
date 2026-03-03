@@ -43,16 +43,18 @@ const ConnectPageWithLayout = () => {
   };
 
   return (
-    <>
+    <div className="min-h-screen flex flex-col bg-[#ebecec]">
       <HeaderGuest onConnectClick={handleConnectClick} />
-      <ConnectPage
-        onConnectClick={handleConnectClick}
-        isModalOpen={isModalOpen}
-        modalMode={modalMode}
-        onModalClose={handleModalClose}
-        onModeSwitch={handleModeSwitch}
-        onAuthSuccess={handleAuthSuccess}
-      />
+      <main className="flex-1 flex">
+        <ConnectPage
+          onConnectClick={handleConnectClick}
+          isModalOpen={isModalOpen}
+          modalMode={modalMode}
+          onModalClose={handleModalClose}
+          onModeSwitch={handleModeSwitch}
+          onAuthSuccess={handleAuthSuccess}
+        />
+      </main>
       <Footer />
       <AuthModal
         mode={modalMode}
@@ -61,7 +63,7 @@ const ConnectPageWithLayout = () => {
         onModeSwitch={handleModeSwitch}
         onSuccess={handleAuthSuccess}
       />
-    </>
+    </div>
   );
 };
 
